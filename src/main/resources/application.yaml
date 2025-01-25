@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: movieflix
+
+  datasource:
+    url: jdbc:postgresql://localhost:15432/acadplanner
+    username: ${DB_USER}
+    password: ${DB_PASS}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+
+  flyway:
+    enabled: true
