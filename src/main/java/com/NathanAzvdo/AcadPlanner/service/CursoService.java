@@ -61,7 +61,7 @@ public class CursoService {
         Optional<Curso> optionalCurso = cursoRepository.findById(cursoId);
         if(optionalCurso.isPresent()){
             Curso curso = optionalCurso.get();
-            Optional<Materia> materia = materiaService.findById(materiaId);
+            Optional<Materia> materia = Optional.ofNullable(materiaService.findById(materiaId));
             if(materia.isPresent()){
                 curso.getMaterias().add(materia.get());
                 return cursoRepository.save(curso);
@@ -77,7 +77,7 @@ public class CursoService {
         Optional<Curso> optionalCurso = cursoRepository.findById(cursoId);
         if(optionalCurso.isPresent()){
             Curso curso = optionalCurso.get();
-            Optional<Materia> materia = materiaService.findById(materiaId);
+            Optional<Materia> materia = Optional.ofNullable(materiaService.findById(materiaId));
             if(materia.isPresent()){
                 curso.getMaterias().remove(materia.get());
                 return cursoRepository.save(curso);

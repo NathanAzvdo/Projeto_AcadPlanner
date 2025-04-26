@@ -6,7 +6,6 @@ import com.NathanAzvdo.AcadPlanner.repository.MateriaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MateriaService {
@@ -21,37 +20,32 @@ public class MateriaService {
         return materiaRepository.save(newMateria);
     }
 
-    public Optional<Materia> findById(Long id) {
-        Optional<Materia> materia = materiaRepository.findById(id);
-        if (materia.isEmpty()) {
-            throw new InvalidIdException("Id inválido!");
-        }
-        return materia;
+    public Materia findById(Long id) {
+        return materiaRepository.findById(id)
+                .orElseThrow(() -> new InvalidIdException("Matéria não encontrada para o ID: " + id));
     }
 
     public void deleteById(Long id) {
-        Optional<Materia> searchMateria = materiaRepository.findById(id);
-        if(searchMateria.isEmpty()){
-            throw new InvalidIdException("Id inválido!");
+        if (!materiaRepository.existsById(id)) {
+            throw new InvalidIdException("Matéria não encontrada para o ID: " + id);
         }
+        materiaRepository.deleteById(id);
     }
 
     public List<Materia> findAll() {
         return materiaRepository.findAll();
     }
 
-    public Optional<Materia> updateMateria(Materia materia, Long id) {
-        Optional<Materia> optionalMateria = materiaRepository.findById(id);
-        if (optionalMateria.isPresent()){
-            Materia newMateria = optionalMateria.get();
-            newMateria.setNome(materia.getNome());
-            newMateria.setDescricao(materia.getDescricao());
-            newMateria.setCreditos(materia.getCreditos());
-            newMateria.setCursos(materia.getCursos());
-            newMateria.setPreRequisitos(materia.getPreRequisitos());
+    public Materia updateMateria(Materia materia, Long id) {
+        Materia existingMateria = materiaRepository.findById(id)
+                .orElseThrow(() -> new InvalidIdException("Matéria não encontrada para o ID: " + id));
 
-            return Optional.of(materiaRepository.save(newMateria));
-        }
-        return Optional.empty();
+        existingMateria.setNome(materia.getNome());
+        existingMateria.setDescricao(materia.getDescricao());
+        existingMateria.setCreditos(materia.getCreditos());
+        existingMateria.setCursos(materia.getCursos());
+        existingMateria.setPreRequisitos(materia.getPreRequisitos());
+
+        return materiaRepository.save(existingMateria);
     }
 }
