@@ -1,10 +1,14 @@
 package com.NathanAzvdo.AcadPlanner.service;
 
 import com.NathanAzvdo.AcadPlanner.entity.Materia;
+import com.NathanAzvdo.AcadPlanner.exceptions.InvalidIdException;
 import com.NathanAzvdo.AcadPlanner.repository.MateriaRepository;
+import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
+@Service
 public class MateriaService {
 
     private final MateriaRepository materiaRepository;
@@ -18,19 +22,26 @@ public class MateriaService {
     }
 
     public Optional<Materia> findById(Long id) {
-        return materiaRepository.findById(id);
+        Optional<Materia> materia = materiaRepository.findById(id);
+        if (materia.isEmpty()) {
+            throw new InvalidIdException("Id inválido!");
+        }
+        return materia;
     }
 
-    public void delete(Materia materia) {
-        materiaRepository.delete(materia);
+    public void deleteById(Long id) {
+        Optional<Materia> searchMateria = materiaRepository.findById(id);
+        if(searchMateria.isEmpty()){
+            throw new InvalidIdException("Id inválido!");
+        }
     }
 
-    public void findAll() {
-        materiaRepository.findAll();
+    public List<Materia> findAll() {
+        return materiaRepository.findAll();
     }
 
-    public Optional<Materia> updateMateria(Materia materia) {
-        Optional<Materia> optionalMateria = materiaRepository.findById(materia.getId());
+    public Optional<Materia> updateMateria(Materia materia, Long id) {
+        Optional<Materia> optionalMateria = materiaRepository.findById(id);
         if (optionalMateria.isPresent()){
             Materia newMateria = optionalMateria.get();
             newMateria.setNome(materia.getNome());

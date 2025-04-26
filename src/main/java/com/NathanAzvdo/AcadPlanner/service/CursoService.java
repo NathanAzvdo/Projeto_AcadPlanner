@@ -3,6 +3,7 @@ package com.NathanAzvdo.AcadPlanner.service;
 
 import com.NathanAzvdo.AcadPlanner.entity.Curso;
 import com.NathanAzvdo.AcadPlanner.entity.Materia;
+import com.NathanAzvdo.AcadPlanner.exceptions.InvalidIdException;
 import com.NathanAzvdo.AcadPlanner.repository.CursoRepository;
 import org.springframework.stereotype.Service;
 
@@ -30,11 +31,19 @@ public class CursoService {
     }
 
     public Optional<Curso> findById(Long id){
-        return cursoRepository.findById(id);
+        Optional<Curso> curso = cursoRepository.findById(id);
+        if(curso.isEmpty()){
+            throw new InvalidIdException("Id inválido!");
+        }
+        return curso;
     }
 
-    public void delete(Curso curso){
-        cursoRepository.delete(curso);
+    public void deleteById(Long id){
+        Optional<Curso> curso = cursoRepository.findById(id);
+        if(curso.isEmpty()){
+            throw new InvalidIdException("Id inválido!");
+        }
+        cursoRepository.deleteById(id);
     }
 
     public Optional<Curso> update(Curso curso){
