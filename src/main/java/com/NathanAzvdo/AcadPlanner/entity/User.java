@@ -4,9 +4,6 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Collection;
-import java.util.List;
-
 @Entity
 @Data
 @Table(name="users")
