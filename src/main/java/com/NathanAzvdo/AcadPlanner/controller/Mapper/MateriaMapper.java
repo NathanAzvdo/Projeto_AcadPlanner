@@ -1,20 +1,35 @@
 package com.NathanAzvdo.AcadPlanner.controller.Mapper;
 
+import com.NathanAzvdo.AcadPlanner.controller.Request.CursoRequest;
 import com.NathanAzvdo.AcadPlanner.controller.Request.MateriaRequest;
 import com.NathanAzvdo.AcadPlanner.controller.Response.MateriaResponse;
+import com.NathanAzvdo.AcadPlanner.entity.Curso;
 import com.NathanAzvdo.AcadPlanner.entity.Materia;
 import lombok.experimental.UtilityClass;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @UtilityClass
 public class MateriaMapper {
 
-    public static Materia toMateria(MateriaRequest materiaRequest){
+    public static Materia toMateria(MateriaRequest materiaRequest) {
+        List<Curso> cursoEntities = materiaRequest.curso()
+                .stream()
+                .map(CursoMapper::toEntity)
+                .collect(Collectors.toList());
+
+        List<Materia> materiaEntities= materiaRequest.preRequisito()
+                .stream()
+                .map(MateriaMapper::toMateria)
+                .collect(Collectors.toList());
+
         return Materia.builder()
                 .nome(materiaRequest.nome())
                 .creditos(materiaRequest.creditos())
-                .cursos(materiaRequest.curso())
+                .cursos(cursoEntities)
                 .descricao(materiaRequest.descricao())
-                .preRequisitos(materiaRequest.preRequisito())
+                .preRequisitos(materiaEntities)
                 .build();
     }
 

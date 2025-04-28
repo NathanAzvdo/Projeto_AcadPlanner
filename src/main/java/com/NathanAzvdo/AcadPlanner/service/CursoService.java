@@ -46,8 +46,8 @@ public class CursoService {
         cursoRepository.deleteById(id);
     }
 
-    public Optional<Curso> update(Curso curso){
-        Optional<Curso> optionalCurso = cursoRepository.findById(curso.getId());
+    public Optional<Curso> update(Curso curso, Long id){
+        Optional<Curso> optionalCurso = cursoRepository.findById(id);
         if(optionalCurso.isPresent()){
             Curso cursoToUpdate = optionalCurso.get();
             cursoToUpdate.setNome(curso.getNome());

@@ -5,5 +5,5 @@ import com.NathanAzvdo.AcadPlanner.controller.Response.UserResponse;
 
 import java.util.List;
 
-public record CursoRequest(Long id, String nome, String descricao, List<UserResponse> users, List<MateriaResponse> materias) {
+public record CursoRequest(Long id, String nome, String descricao, List<UserRequest> users, List<MateriaRequest> materias) {
 }

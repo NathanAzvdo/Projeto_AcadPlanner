@@ -6,5 +6,5 @@ import lombok.Builder;
 
 import java.util.List;
 
-public record MateriaRequest(String nome, String descricao, int creditos, List<Curso> curso, List<Materia> preRequisito) {
+public record MateriaRequest(String nome, String descricao, int creditos, List<CursoRequest> curso, List<MateriaRequest> preRequisito) {
 }
