@@ -75,6 +75,18 @@ public class CursoController{
         return ResponseEntity.ok().body(CursoMapper.toResponse(updatedCurso));
     }
 
+    @PostMapping("/addMateria/{cursoId}/{MateriaId}")
+    public ResponseEntity<CursoResponse> addMateria(@PathVariable Long cursoId, @PathVariable Long materiaId){
+        Curso curso = cursoService.addMateria(cursoId, materiaId);
+        return ResponseEntity.ok(CursoMapper.toResponse(curso));
+    }
+
+    @DeleteMapping("/deleteMateria/{cursoId}/{MateriaId}")
+    public ResponseEntity<CursoResponse> removeMateria(@PathVariable Long cursoId, @PathVariable Long materiaId){
+        Curso curso = cursoService.deleteMateria(cursoId, materiaId);
+        return ResponseEntity.ok(CursoMapper.toResponse(curso));
+    }
+
 
 
 

@@ -67,10 +67,11 @@ public class CursoService {
                 return cursoRepository.save(curso);
             }
             else{
-                return null;
+                throw new InvalidIdException("Matéria com ID "+materiaId+" não encontrada!");
             }
+        }else{
+            throw new InvalidIdException("Curso com ID "+cursoId+" não encontrado!");
         }
-        return null;
     }
 
     public Curso deleteMateria(Long cursoId, Long materiaId){
@@ -82,8 +83,37 @@ public class CursoService {
                 curso.getMaterias().remove(materia.get());
                 return cursoRepository.save(curso);
             }
+            else{
+                throw new InvalidIdException("Matéria com ID "+materiaId+" não encontrada!");
+            }
+        }else{
+            throw new InvalidIdException("Curso com ID "+cursoId+" não encontrado!");
         }
-        return null;
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
