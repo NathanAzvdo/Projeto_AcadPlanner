@@ -44,17 +44,3 @@ Veja abaixo o diagrama Entidade-Relacionamento (ER) do banco de dados:
 
 ![Diagrama ER](img.png)
 
-## Endpoints (API)
-
-- **Usuários**:
-    - `POST /usuarios`: Cadastro de usuário.
-    - `GET /usuarios/{id}`: Detalhes de um usuário.
-
-- **Cursos**:
-    - `POST /cursos`: Cadastro de curso (somente administrador).
-    - `GET /cursos`: Listar todos os cursos.
-
-- **Matérias**:
-    - `POST /materias`: Cadastro de matéria (somente administrador).
-    - `GET /materias`: Listar todas as matérias.
-    - `GET /materias/disponiveis`: Listar matérias disponíveis para o usuário logado.

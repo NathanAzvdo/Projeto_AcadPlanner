@@ -24,7 +24,7 @@ public class CursoController{
         this.cursoService = cursoService;
     }
 
-    @PostMapping("/save")
+    @PostMapping()
     public ResponseEntity<CursoResponse> save(@RequestBody CursoRequest cursoRequest) {
         Curso toCurso = CursoMapper.toEntity(cursoRequest);
         Curso savedCurso = cursoService.save(toCurso);
@@ -33,34 +33,25 @@ public class CursoController{
 
     @GetMapping("/{id}")
     public ResponseEntity<CursoResponse> findById(@PathVariable Long id) {
-        Optional<Curso> curso = cursoService.findById(id);
-        if (curso.isEmpty()) {
-            throw new InvalidIdException("Id inválido");
-        }
-        return ResponseEntity.ok(CursoMapper.toResponse(curso.get()));
+        Curso curso = cursoService.findById(id);
+        return ResponseEntity.ok(CursoMapper.toResponse(curso));
     }
 
     @GetMapping
     public ResponseEntity<List<CursoResponse>> findAll() {
-        Optional<List<Curso>> cursos = Optional.ofNullable(cursoService.listAll());
+        List<Curso> cursos = cursoService.listAll();
 
-        if (cursos.isEmpty() || cursos.get().isEmpty()) {
-            throw new EmptyListException("Nenhum curso encontrado.");
-        }
-
-        List<CursoResponse> responseList = cursos.get()
+        List<CursoResponse> responseList = cursos
                 .stream()
                 .map(CursoMapper::toResponse)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(responseList);
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteById(@PathVariable Long id){
-        Optional<Curso> curso = cursoService.findById(id);
-        if (curso.isEmpty()) {
-            throw new InvalidIdException("Id inválido");
-        }
+        Curso curso = cursoService.findById(id);
         cursoService.deleteById(id);
         return ResponseEntity.ok("Curso deletado com sucesso!");
     }
@@ -68,24 +59,10 @@ public class CursoController{
     @PatchMapping("/{id}")
     public ResponseEntity<CursoResponse> update(@RequestBody CursoRequest cursoRequest, @PathVariable Long id) {
         Curso newCurso = CursoMapper.toEntity(cursoRequest);
-
-        Curso updatedCurso = cursoService.update(newCurso, id)
-                .orElseThrow(() -> new InvalidIdException("Curso não encontrado para atualização"));
-
+        Curso updatedCurso = cursoService.update(newCurso, id);
         return ResponseEntity.ok().body(CursoMapper.toResponse(updatedCurso));
     }
 
-    @PostMapping("/addMateria/{cursoId}/{MateriaId}")
-    public ResponseEntity<CursoResponse> addMateria(@PathVariable Long cursoId, @PathVariable Long materiaId){
-        Curso curso = cursoService.addMateria(cursoId, materiaId);
-        return ResponseEntity.ok(CursoMapper.toResponse(curso));
-    }
-
-    @DeleteMapping("/deleteMateria/{cursoId}/{MateriaId}")
-    public ResponseEntity<CursoResponse> removeMateria(@PathVariable Long cursoId, @PathVariable Long materiaId){
-        Curso curso = cursoService.deleteMateria(cursoId, materiaId);
-        return ResponseEntity.ok(CursoMapper.toResponse(curso));
-    }
 
 
 

@@ -3,6 +3,7 @@ package com.NathanAzvdo.AcadPlanner.service;
 
 import com.NathanAzvdo.AcadPlanner.entity.Curso;
 import com.NathanAzvdo.AcadPlanner.entity.Materia;
+import com.NathanAzvdo.AcadPlanner.exceptions.EmptyListException;
 import com.NathanAzvdo.AcadPlanner.exceptions.InvalidIdException;
 import com.NathanAzvdo.AcadPlanner.repository.CursoRepository;
 import org.springframework.stereotype.Service;
@@ -27,15 +28,16 @@ public class CursoService {
     }
 
     public List<Curso> listAll(){
-        return cursoRepository.findAll();
+        List<Curso> cursos = cursoRepository.findAll();
+        if (cursos.isEmpty()) {
+            throw new EmptyListException("Nenhum curso encontrado.");
+        }
+        return cursos;
     }
 
-    public Optional<Curso> findById(Long id){
-        Optional<Curso> curso = cursoRepository.findById(id);
-        if(curso.isEmpty()){
-            throw new InvalidIdException("Id inválido!");
-        }
-        return curso;
+    public Curso findById(Long id){
+        return cursoRepository.findById(id)
+                .orElseThrow(() -> new InvalidIdException("Curso com ID " + id + " não encontrado"));
     }
 
     public void deleteById(Long id){
@@ -46,49 +48,23 @@ public class CursoService {
         cursoRepository.deleteById(id);
     }
 
-    public Optional<Curso> update(Curso curso, Long id){
-        Optional<Curso> optionalCurso = cursoRepository.findById(id);
-        if(optionalCurso.isPresent()){
-            Curso cursoToUpdate = optionalCurso.get();
-            cursoToUpdate.setNome(curso.getNome());
-            cursoToUpdate.setDescricao(curso.getDescricao());
-            return Optional.of(cursoRepository.save(cursoToUpdate));
-        }
-        return Optional.empty();
-    }
+    public Curso update(Curso curso, Long id) {
+        return cursoRepository.findById(id)
+                .map(cursoToUpdate -> {
+                    Optional.ofNullable(curso.getNome()).ifPresent(cursoToUpdate::setNome);
+                    Optional.ofNullable(curso.getDescricao()).ifPresent(cursoToUpdate::setDescricao);
 
-    public Curso addMateria(Long cursoId, Long materiaId){
-        Optional<Curso> optionalCurso = cursoRepository.findById(cursoId);
-        if(optionalCurso.isPresent()){
-            Curso curso = optionalCurso.get();
-            Optional<Materia> materia = Optional.ofNullable(materiaService.findById(materiaId));
-            if(materia.isPresent()){
-                curso.getMaterias().add(materia.get());
-                return cursoRepository.save(curso);
-            }
-            else{
-                throw new InvalidIdException("Matéria com ID "+materiaId+" não encontrada!");
-            }
-        }else{
-            throw new InvalidIdException("Curso com ID "+cursoId+" não encontrado!");
-        }
-    }
+                    Optional.ofNullable(curso.getUsuarios())
+                            .filter(usuarios -> !usuarios.isEmpty())
+                            .ifPresent(cursoToUpdate::setUsuarios);
 
-    public Curso deleteMateria(Long cursoId, Long materiaId){
-        Optional<Curso> optionalCurso = cursoRepository.findById(cursoId);
-        if(optionalCurso.isPresent()){
-            Curso curso = optionalCurso.get();
-            Optional<Materia> materia = Optional.ofNullable(materiaService.findById(materiaId));
-            if(materia.isPresent()){
-                curso.getMaterias().remove(materia.get());
-                return cursoRepository.save(curso);
-            }
-            else{
-                throw new InvalidIdException("Matéria com ID "+materiaId+" não encontrada!");
-            }
-        }else{
-            throw new InvalidIdException("Curso com ID "+cursoId+" não encontrado!");
-        }
+                    Optional.ofNullable(curso.getMaterias())
+                            .filter(materias -> !materias.isEmpty())
+                            .ifPresent(cursoToUpdate::setMaterias);
+
+                    return cursoRepository.save(cursoToUpdate);
+                })
+                .orElseThrow(() -> new InvalidIdException("Curso com ID " + id + " não encontrado para atualização"));
     }
 
 }
