@@ -8,6 +8,8 @@ AcadPlanner é um sistema projetado para ajudar estudantes universitários a org
 - **Gestão de usuários**: Alunos podem se registrar, escolher seu curso e acompanhar seu progresso.
 - **Sugestão de disciplinas**: O sistema apresenta as matérias disponíveis para cursar com base nos pré-requisitos cumpridos.
 - **Controle de progresso**: Registro de matérias em andamento e já concluídas pelos alunos.
+- **Roadmap**: Gerar roadmap de estudos de uma máteria passando o tempo(semanas, dias) que você precisar para dominar-la(USO API OPENAI).
+
 
 ## Requisitos
 

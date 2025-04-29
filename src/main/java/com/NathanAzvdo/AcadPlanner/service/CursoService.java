@@ -2,7 +2,6 @@ package com.NathanAzvdo.AcadPlanner.service;
 
 
 import com.NathanAzvdo.AcadPlanner.entity.Curso;
-import com.NathanAzvdo.AcadPlanner.entity.Materia;
 import com.NathanAzvdo.AcadPlanner.exceptions.EmptyListException;
 import com.NathanAzvdo.AcadPlanner.exceptions.InvalidIdException;
 import com.NathanAzvdo.AcadPlanner.repository.CursoRepository;

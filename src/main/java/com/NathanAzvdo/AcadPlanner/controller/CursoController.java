@@ -4,14 +4,11 @@ import com.NathanAzvdo.AcadPlanner.controller.Mapper.CursoMapper;
 import com.NathanAzvdo.AcadPlanner.controller.Request.CursoRequest;
 import com.NathanAzvdo.AcadPlanner.controller.Response.CursoResponse;
 import com.NathanAzvdo.AcadPlanner.entity.Curso;
-import com.NathanAzvdo.AcadPlanner.exceptions.EmptyListException;
-import com.NathanAzvdo.AcadPlanner.exceptions.InvalidIdException;
 import com.NathanAzvdo.AcadPlanner.service.CursoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
