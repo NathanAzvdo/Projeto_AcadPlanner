@@ -4,6 +4,7 @@ import com.NathanAzvdo.AcadPlanner.controller.Mapper.MateriaMapper;
 import com.NathanAzvdo.AcadPlanner.controller.Request.MateriaRequest;
 import com.NathanAzvdo.AcadPlanner.controller.Response.MateriaResponse;
 import com.NathanAzvdo.AcadPlanner.entity.Materia;
+import com.NathanAzvdo.AcadPlanner.service.PreRequisitoService;
 import org.springframework.http.ResponseEntity;
 import com.NathanAzvdo.AcadPlanner.service.MateriaService;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +15,12 @@ import java.util.List;
 @RequestMapping("/materia")
 public class MateriaController {
 
-    private MateriaService materiaService;
+    private final MateriaService materiaService;
+    private final PreRequisitoService preRequisitoService;
 
-    public MateriaController(MateriaService materiaService) {
+    public MateriaController(MateriaService materiaService, PreRequisitoService preRequisitoService) {
         this.materiaService = materiaService;
+        this.preRequisitoService = preRequisitoService;
     }
 
     @PostMapping("/save")
@@ -53,5 +56,26 @@ public class MateriaController {
         Materia newMateria = MateriaMapper.toMateria(materiaRequest);
         Materia updatedMateria = materiaService.updateMateria(newMateria, id);
         return ResponseEntity.ok().body(MateriaMapper.toMateriaResponse(updatedMateria));
+    }
+
+    @PostMapping("/{materiaId}/pre-requisito/{preRequisitoId}")
+    public ResponseEntity<MateriaResponse> addPreRequisito(@PathVariable Long materiaId, @PathVariable Long preRequisitoId) {
+        Materia updatedMateria = preRequisitoService.addPreRequisito(materiaId, preRequisitoId);
+        return ResponseEntity.ok().body(MateriaMapper.toMateriaResponse(updatedMateria));
+    }
+
+    @DeleteMapping("/{materiaId}/pre-requisito/{preRequisitoId}")
+    public ResponseEntity<MateriaResponse> removePreRequisito(@PathVariable Long materiaId, @PathVariable Long preRequisitoId) {
+        Materia updatedMateria = preRequisitoService.removePreRequisito(materiaId, preRequisitoId);
+        return ResponseEntity.ok().body(MateriaMapper.toMateriaResponse(updatedMateria));
+    }
+
+    @GetMapping("/{materiaId}/pre-requisito")
+    public ResponseEntity<List<MateriaResponse>> getPreRequisitos(@PathVariable Long materiaId) {
+        List<Materia> preRequisitos = preRequisitoService.getPreRequisitos(materiaId);
+        List<MateriaResponse> response = preRequisitos.stream()
+                .map(MateriaMapper::toMateriaResponse)
+                .toList();
+        return ResponseEntity.ok().body(response);
     }
 }

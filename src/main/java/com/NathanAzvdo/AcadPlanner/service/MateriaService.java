@@ -56,10 +56,6 @@ public class MateriaService {
                             .filter(cursos -> !cursos.isEmpty())
                             .ifPresent(materiaToUpdate::setCursos);
 
-                    Optional.ofNullable(materia.getPreRequisitos())
-                            .filter(preReqs -> !preReqs.isEmpty())
-                            .ifPresent(materiaToUpdate::setPreRequisitos);
-
                     return materiaRepository.save(materiaToUpdate);
                 })
                 .orElseThrow(() -> new InvalidIdException("Matéria não encontrada para o ID: " + id));
