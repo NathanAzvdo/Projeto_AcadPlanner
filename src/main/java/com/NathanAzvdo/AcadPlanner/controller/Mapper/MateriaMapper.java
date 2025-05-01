@@ -2,6 +2,7 @@ package com.NathanAzvdo.AcadPlanner.controller.Mapper;
 
 import com.NathanAzvdo.AcadPlanner.controller.Request.CursoRequest;
 import com.NathanAzvdo.AcadPlanner.controller.Request.MateriaRequest;
+import com.NathanAzvdo.AcadPlanner.controller.Response.CursoBasicoResponse;
 import com.NathanAzvdo.AcadPlanner.controller.Response.MateriaResponse;
 import com.NathanAzvdo.AcadPlanner.entity.Curso;
 import com.NathanAzvdo.AcadPlanner.entity.Materia;
@@ -33,13 +34,18 @@ public class MateriaMapper {
                 .build();
     }
 
-    public static MateriaResponse toMateriaResponse(Materia materia){
+    public static MateriaResponse toMateriaResponse(Materia materia) {
         return MateriaResponse.builder()
                 .nome(materia.getNome())
-                .creditos(materia.getCreditos())
-                .curso(materia.getCursos())
                 .descricao(materia.getDescricao())
-                .preRequisito(materia.getPreRequisitos())
+                .creditos(materia.getCreditos())
+                .cursos(materia.getCursos().stream()
+                        .map(c -> new CursoBasicoResponse(c.getId(), c.getNome()))
+                        .collect(Collectors.toList()))
+                .preRequisitos(materia.getPreRequisitos().stream()
+                        .map(Materia::getNome) // ou ID, conforme quiser
+                        .collect(Collectors.toList()))
                 .build();
     }
+
 }

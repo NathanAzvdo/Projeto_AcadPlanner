@@ -1,5 +1,6 @@
 package com.NathanAzvdo.AcadPlanner.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,8 +21,10 @@ public class Curso {
 
     private String descricao;
 
-    @OneToMany(mappedBy = "curso")
+    @OneToMany(mappedBy = "curso", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<User> usuarios;
+
 
     @ManyToMany
     @JoinTable(
@@ -29,5 +32,6 @@ public class Curso {
             joinColumns = @JoinColumn(name = "curso_id"),
             inverseJoinColumns = @JoinColumn(name = "materia_id")
     )
+    @JsonIgnore
     private List<Materia> materias;
 }

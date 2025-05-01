@@ -1,5 +1,6 @@
 package com.NathanAzvdo.AcadPlanner.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +28,13 @@ public class Materia {
     @Column(nullable = false)
     private int creditos;
 
-    @ManyToMany(mappedBy = "materias")
+    @ManyToMany
+    @JoinTable(
+            name = "curso_materia",
+            joinColumns = @JoinColumn(name = "materia_id"),
+            inverseJoinColumns = @JoinColumn(name = "curso_id")
+    )
+    @JsonIgnore
     private List<Curso> cursos;
 
     @ManyToMany
@@ -36,5 +43,6 @@ public class Materia {
             joinColumns = @JoinColumn(name = "materia_id"),
             inverseJoinColumns = @JoinColumn(name = "pre_requisito_id")
     )
+    @JsonIgnore
     private List<Materia> preRequisitos;
 }

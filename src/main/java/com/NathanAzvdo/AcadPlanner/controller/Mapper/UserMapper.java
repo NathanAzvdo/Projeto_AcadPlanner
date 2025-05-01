@@ -13,7 +13,6 @@ public class UserMapper {
                 user.getId(),
                 user.getNome(),
                 user.getEmail(),
-                user.isAdmin(),
                 CursoMapper.toResponse(user.getCurso())
         );
     }
@@ -21,10 +20,8 @@ public class UserMapper {
     public static User toEntityBasic(UserRequest request) {
         if (request == null) return null;
         return User.builder()
-                .id(request.id())
                 .nome(request.nome())
                 .email(request.email())
-                .admin(request.admin())
                 .curso(request.curso() != null ? CursoMapper.toEntityBasic(request.curso().id()) : null)
                 .build();
     }
