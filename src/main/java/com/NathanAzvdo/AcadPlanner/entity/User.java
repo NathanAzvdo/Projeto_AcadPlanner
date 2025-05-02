@@ -16,6 +16,13 @@ import java.util.List;
 @Builder
 public class User implements UserDetails {
 
+
+    public User(String email, String senha, Curso curso) {
+        this.email = email;
+        this.senha = senha;
+        this.curso = curso;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
