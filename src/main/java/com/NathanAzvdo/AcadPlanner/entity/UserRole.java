@@ -1,8 +1,8 @@
 package com.NathanAzvdo.AcadPlanner.entity;
 
 public enum UserRole {
-    ADMIN("admin"),
-    USER("user");
+    ADMIN("ADMIN"),
+    USER("USER");
 
     private final String role;
 

@@ -1,2 +1,2 @@
-ALTER TABLE users
+ALTER TABLE usuario
 DROP COLUMN IF EXISTS admin;

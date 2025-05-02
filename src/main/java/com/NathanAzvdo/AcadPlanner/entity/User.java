@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "users")
+@Table(name = "usuario")
 public class User implements UserDetails {
 
     @Id
@@ -38,16 +38,15 @@ public class User implements UserDetails {
     @Column(name = "role")
     private UserRole role;
 
-    // ✅ Construtor com 4 argumentos + builder
     @Builder
     public User(String nome, String email, String senha, Curso curso) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
         this.curso = curso;
+        this.role = UserRole.USER;
     }
 
-    // ✅ Construtor vazio obrigatório para JPA
     public User() {}
 
     @Override
