@@ -23,6 +23,7 @@ public class UserMapper {
                 .nome(request.nome())
                 .email(request.email())
                 .curso(request.curso() != null ? CursoMapper.toEntityBasic(request.curso().id()) : null)
+                .senha(request.senha())
                 .build();
     }
 }

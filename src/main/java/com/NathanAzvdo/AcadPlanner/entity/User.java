@@ -1,8 +1,9 @@
 package com.NathanAzvdo.AcadPlanner.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.Builder;
-import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,17 +12,10 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Data
-@Table(name="users")
-@Builder
+@Getter
+@Setter
+@Table(name = "users")
 public class User implements UserDetails {
-
-
-    public User(String email, String senha, Curso curso) {
-        this.email = email;
-        this.senha = senha;
-        this.curso = curso;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,23 +38,38 @@ public class User implements UserDetails {
     @Column(name = "role")
     private UserRole role;
 
+    // ✅ Construtor com 4 argumentos + builder
+    @Builder
+    public User(String nome, String email, String senha, Curso curso) {
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.curso = curso;
+    }
+
+    // ✅ Construtor vazio obrigatório para JPA
+    public User() {}
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(this.role == UserRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"),
-                new SimpleGrantedAuthority("ROLE_USER"));
-
-        else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
-
+        if (this.role == UserRole.ADMIN) {
+            return List.of(
+                    new SimpleGrantedAuthority("ROLE_ADMIN"),
+                    new SimpleGrantedAuthority("ROLE_USER")
+            );
+        } else {
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        }
     }
 
     @Override
     public String getPassword() {
-        return "";
+        return this.senha;
     }
 
     @Override
     public String getUsername() {
-        return email;
+        return this.email;
     }
 
     @Override

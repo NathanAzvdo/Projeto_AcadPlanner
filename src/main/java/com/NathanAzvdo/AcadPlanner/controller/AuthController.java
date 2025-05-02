@@ -37,10 +37,10 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody @Valid UserRequest data){
-        if(this.userRepository.findByEmail(String.valueOf(data.email() != null))) return ResponseEntity.badRequest().build();
+        if(this.userRepository.findByEmail(data.email()).isPresent()) return ResponseEntity.badRequest().build();
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.senha());
-        User newUser = new User(data.email(), encryptedPassword, CursoMapper.toEntity(data.curso()));
+        User newUser = new User(data.nome() , data.email(), encryptedPassword, CursoMapper.toEntity(data.curso()));
 
         this.userRepository.save(newUser);
 
