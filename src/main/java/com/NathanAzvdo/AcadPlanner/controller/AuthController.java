@@ -1,8 +1,10 @@
 package com.NathanAzvdo.AcadPlanner.controller;
 
 
+import com.NathanAzvdo.AcadPlanner.config.TokenService;
 import com.NathanAzvdo.AcadPlanner.controller.Mapper.CursoMapper;
 import com.NathanAzvdo.AcadPlanner.controller.Request.UserRequest;
+import com.NathanAzvdo.AcadPlanner.controller.Response.LoginDTO;
 import com.NathanAzvdo.AcadPlanner.entity.User;
 import com.NathanAzvdo.AcadPlanner.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +33,8 @@ public class AuthController {
     public ResponseEntity login(@RequestBody @Valid UserRequest data){
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.senha());
         var authentication = authenticationManager.authenticate(usernamePassword);
-
-        return ResponseEntity.ok().build();
+        var token = new TokenService().generateToken((User) authentication.getPrincipal());
+        return ResponseEntity.ok(new LoginDTO(token));
     }
 
     @PostMapping("/register")
