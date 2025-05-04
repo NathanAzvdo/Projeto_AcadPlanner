@@ -8,6 +8,7 @@ import com.NathanAzvdo.AcadPlanner.controller.Response.LoginDTO;
 import com.NathanAzvdo.AcadPlanner.controller.Response.UserResponse;
 import com.NathanAzvdo.AcadPlanner.entity.User;
 import com.NathanAzvdo.AcadPlanner.repository.UserRepository;
+import com.NathanAzvdo.AcadPlanner.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -31,6 +32,9 @@ public class AuthController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserService userService;
+
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid UserRequest userRequest){
@@ -44,21 +48,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid UserRequest userRequest) {
-        if (userRequest.nome() == null || userRequest.email() == null ||
-                userRequest.senha() == null || userRequest.curso().id() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Preencha todos os campos!");
-        }
-
-        User data = UserMapper.toEntityBasic(userRequest);
-        if (userRepository.findByEmail(data.getEmail()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email já cadastrado!");
-        }
-
-        String encryptedPassword = new BCryptPasswordEncoder().encode(data.getSenha());
-        data.setSenha(encryptedPassword);
-
-        User newUserSaved = userRepository.save(data);
-        return ResponseEntity.ok().body(UserMapper.toResponse(newUserSaved));
+        User user = UserMapper.toEntityBasic(userRequest);
+        UserResponse userResponse=  UserMapper.toResponse(userService.register(user));
+        return ResponseEntity.ok().body(userResponse);
     }
 
 }
