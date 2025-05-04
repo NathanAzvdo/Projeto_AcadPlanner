@@ -1,6 +1,7 @@
 package com.NathanAzvdo.AcadPlanner.controller.Mapper;
 
 import com.NathanAzvdo.AcadPlanner.controller.Request.CursoRequest;
+import com.NathanAzvdo.AcadPlanner.controller.Response.CursoBasicoResponse;
 import com.NathanAzvdo.AcadPlanner.controller.Response.CursoResponse;
 import com.NathanAzvdo.AcadPlanner.controller.Response.MateriaBasicaResponse;
 import com.NathanAzvdo.AcadPlanner.entity.Curso;
@@ -53,5 +54,14 @@ public class CursoMapper {
         Curso curso = new Curso();
         curso.setId(id);
         return curso;
+    }
+
+    public static CursoBasicoResponse toBasicoResponse(Curso curso) {
+        if (curso == null) return null;
+
+        return new CursoBasicoResponse(
+                curso.getId(),
+                curso.getNome()
+        );
     }
 }

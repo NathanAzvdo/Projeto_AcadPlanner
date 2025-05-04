@@ -1,4 +1,7 @@
 package com.NathanAzvdo.AcadPlanner.controller.Response;
 
-public record UserResponse(Long id, String nome, String email, CursoResponse curso) {
+import lombok.Builder;
+
+@Builder
+public record UserResponse(Long id, String nome, String email, CursoBasicoResponse curso) {
 }
