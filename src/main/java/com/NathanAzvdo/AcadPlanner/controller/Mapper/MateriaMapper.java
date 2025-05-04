@@ -40,10 +40,10 @@ public class MateriaMapper {
                 .descricao(materia.getDescricao())
                 .creditos(materia.getCreditos())
                 .cursos(materia.getCursos().stream()
-                        .map(c -> new CursoBasicoResponse(c.getId(), c.getNome()))
+                        .map(c -> new CursoBasicoResponse(c.getId()))
                         .collect(Collectors.toList()))
                 .preRequisitos(materia.getPreRequisitos().stream()
-                        .map(Materia::getNome) // ou ID, conforme quiser
+                        .map(Materia::getNome)
                         .collect(Collectors.toList()))
                 .build();
     }

@@ -60,8 +60,7 @@ public class CursoMapper {
         if (curso == null) return null;
 
         return new CursoBasicoResponse(
-                curso.getId(),
-                curso.getNome()
+                curso.getId()
         );
     }
 }
