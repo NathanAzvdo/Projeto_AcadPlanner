@@ -29,13 +29,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleEmptyListException(EmptyListException ex) {
         Map<String, String> response = new HashMap<>();
         response.put("message", ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(InvalidIdException.class)
     public ResponseEntity<Map<String, String>> handleInvalidIdException(InvalidIdException ex) {
         Map<String, String> response = new HashMap<>();
         response.put("message", ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidCredentialsException(InvalidCredentialsException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }
