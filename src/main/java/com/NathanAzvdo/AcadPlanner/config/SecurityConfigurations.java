@@ -32,7 +32,7 @@ public class SecurityConfigurations {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/materia", "/curso").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/materia", "/curso").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class )
