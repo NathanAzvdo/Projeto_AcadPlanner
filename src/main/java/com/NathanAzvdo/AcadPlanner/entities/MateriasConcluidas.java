@@ -13,9 +13,11 @@ import java.time.LocalDate;
 public class MateriasConcluidas {
 
     @Id
+    @ManyToOne
     private Long usuarioId;
 
     @Id
+    @ManyToOne
     private Long materiaId;
 
     @Column(nullable = false)
