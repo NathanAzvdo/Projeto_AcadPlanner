@@ -8,14 +8,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class MateriaConcluidaIdMapper {
 
-    public MateriaConcluidaIdResponse toResponse(MateriasConcluidasId entity) {
+    public static MateriaConcluidaIdResponse toResponse(MateriasConcluidasId entity) {
         return new MateriaConcluidaIdResponse(
                 entity.getUsuarioId(),
                 entity.getMateriaId()
         );
     }
 
-    public MateriasConcluidasId toEntity(MateriaConcluidaIdResponse response) {
+    public static MateriasConcluidasId toEntity(MateriaConcluidaIdResponse response) {
         return new MateriasConcluidasId(
                 response.usuarioId(),
                 response.materiaId()

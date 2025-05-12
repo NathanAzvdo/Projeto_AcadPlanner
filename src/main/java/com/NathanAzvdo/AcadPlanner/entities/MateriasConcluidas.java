@@ -6,19 +6,23 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+@Entity
 @Data
 @NoArgsConstructor
-@Entity
-@IdClass(MateriasConcluidasId.class)
 public class MateriasConcluidas {
 
-    @Id
-    @ManyToOne
-    private Long usuarioId;
+    @EmbeddedId
+    private MateriasConcluidasId id;
 
-    @Id
     @ManyToOne
-    private Long materiaId;
+    @MapsId("usuarioId")
+    @JoinColumn(name = "usuario_id")
+    private User usuario;
+
+    @ManyToOne
+    @MapsId("materiaId")
+    @JoinColumn(name = "materia_id")
+    private Materia materia;
 
     @Column(nullable = false)
     private LocalDate dataConclusao;
