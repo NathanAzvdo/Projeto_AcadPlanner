@@ -1,5 +1,4 @@
-package com.NathanAzvdo.AcadPlanner.controllers;
-
+package com.NathanAzvdo.AcadPlanner.controllers.open;
 
 import com.NathanAzvdo.AcadPlanner.dtos.mappers.UserMapper;
 import com.NathanAzvdo.AcadPlanner.dtos.requests.UserRequest;
@@ -8,8 +7,8 @@ import com.NathanAzvdo.AcadPlanner.dtos.responses.UserResponse;
 import com.NathanAzvdo.AcadPlanner.entities.User;
 import com.NathanAzvdo.AcadPlanner.services.AuthService;
 import com.NathanAzvdo.AcadPlanner.services.UserService;
-import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +20,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final UserService userService;
+
     public AuthController(AuthService authService, UserService userService) {
         this.authService = authService;
         this.userService = userService;

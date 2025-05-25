@@ -1,4 +1,4 @@
-package com.NathanAzvdo.AcadPlanner.controllers;
+package com.NathanAzvdo.AcadPlanner.controllers.admin;
 
 import com.NathanAzvdo.AcadPlanner.dtos.mappers.MateriaMapper;
 import com.NathanAzvdo.AcadPlanner.dtos.requests.MateriaRequest;
@@ -8,15 +8,13 @@ import org.springframework.http.ResponseEntity;
 import com.NathanAzvdo.AcadPlanner.services.MateriaService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/materia")
-public class MateriaController {
+@RequestMapping("/admin/materia")
+public class MateriaAdminController {
 
     private final MateriaService materiaService;
 
-    public MateriaController(MateriaService materiaService) {
+    public MateriaAdminController(MateriaService materiaService) {
         this.materiaService = materiaService;
     }
 
@@ -31,21 +29,6 @@ public class MateriaController {
     public ResponseEntity<String> delete(@PathVariable Long id) {
         materiaService.deleteById(id);
         return ResponseEntity.ok().body("Matéria deletada com sucesso!");
-    }
-
-    @GetMapping
-    public ResponseEntity<List<MateriaResponse>> findAll() {
-        List<Materia> materias = materiaService.findAll();
-        List<MateriaResponse> response = materias.stream()
-                .map(MateriaMapper::toMateriaResponse)
-                .toList();
-        return ResponseEntity.ok().body(response);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<MateriaResponse> findById(@PathVariable Long id) {
-        Materia materia = materiaService.findById(id);
-        return ResponseEntity.ok().body(MateriaMapper.toMateriaResponse(materia));
     }
 
     @PatchMapping("/{id}")
@@ -67,12 +50,4 @@ public class MateriaController {
         return ResponseEntity.ok().body(MateriaMapper.toMateriaResponse(updatedMateria));
     }
 
-    @GetMapping("/{materiaId}/pre-requisito")
-    public ResponseEntity<List<MateriaResponse>> getPreRequisitos(@PathVariable Long materiaId) {
-        List<Materia> preRequisitos = materiaService.getPreRequisitos(materiaId);
-        List<MateriaResponse> response = preRequisitos.stream()
-                .map(MateriaMapper::toMateriaResponse)
-                .toList();
-        return ResponseEntity.ok().body(response);
-    }
 }

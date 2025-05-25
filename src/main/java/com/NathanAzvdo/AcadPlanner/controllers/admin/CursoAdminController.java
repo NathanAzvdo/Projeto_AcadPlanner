@@ -1,4 +1,4 @@
-package com.NathanAzvdo.AcadPlanner.controllers;
+package com.NathanAzvdo.AcadPlanner.controllers.admin;
 
 import com.NathanAzvdo.AcadPlanner.dtos.mappers.CursoMapper;
 import com.NathanAzvdo.AcadPlanner.dtos.requests.CursoRequest;
@@ -8,16 +8,13 @@ import com.NathanAzvdo.AcadPlanner.services.CursoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @RestController
-@RequestMapping("/curso")
-public class CursoController{
+@RequestMapping("/admin/curso")
+public class CursoAdminController {
 
     private CursoService cursoService;
 
-    public CursoController(CursoService cursoService){
+    public CursoAdminController(CursoService cursoService){
         this.cursoService = cursoService;
     }
 
@@ -28,23 +25,6 @@ public class CursoController{
         return ResponseEntity.ok(CursoMapper.toResponse(savedCurso));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CursoResponse> findById(@PathVariable Long id) {
-        Curso curso = cursoService.findById(id);
-        return ResponseEntity.ok(CursoMapper.toResponse(curso));
-    }
-
-    @GetMapping
-    public ResponseEntity<List<CursoResponse>> findAll() {
-        List<Curso> cursos = cursoService.listAll();
-
-        List<CursoResponse> responseList = cursos
-                .stream()
-                .map(CursoMapper::toResponse)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(responseList);
-    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteById(@PathVariable Long id){
