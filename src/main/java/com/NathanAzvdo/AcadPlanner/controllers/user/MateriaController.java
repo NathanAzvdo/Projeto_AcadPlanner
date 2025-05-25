@@ -45,15 +45,6 @@ public class MateriaController {
         );
     }
 
-    @GetMapping
-    public ResponseEntity<List<MateriaResponse>> findAll(HttpServletRequest request) {
-        List<Materia> materias = materiaService.findAll(request);
-        List<MateriaResponse> response = materias.stream()
-                .map(MateriaMapper::toMateriaResponse)
-                .toList();
-        return ResponseEntity.ok().body(response);
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<MateriaResponse> findById(@PathVariable Long id) {
         Materia materia = materiaService.findById(id);

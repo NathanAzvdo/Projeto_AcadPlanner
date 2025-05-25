@@ -1,10 +1,13 @@
 package com.NathanAzvdo.AcadPlanner.services;
 
 
+import com.NathanAzvdo.AcadPlanner.config.TokenService;
 import com.NathanAzvdo.AcadPlanner.entities.Curso;
+import com.NathanAzvdo.AcadPlanner.exceptions.BusinessException;
 import com.NathanAzvdo.AcadPlanner.exceptions.EmptyListException;
 import com.NathanAzvdo.AcadPlanner.exceptions.InvalidIdException;
 import com.NathanAzvdo.AcadPlanner.repositories.CursoRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,57 +18,112 @@ public class CursoService {
 
     private final CursoRepository cursoRepository;
     private final MateriaAdminService materiaService;
+    private final TokenService tokenService;
 
-    public CursoService(CursoRepository cursoRepository, MateriaAdminService materiaService){
+    public CursoService(CursoRepository cursoRepository, MateriaAdminService materiaService, TokenService tokenService){
         this.cursoRepository = cursoRepository;
         this.materiaService =  materiaService;
-
+        this.tokenService = tokenService;
     }
 
-    public Curso save(Curso curso){
-        return cursoRepository.save(curso);
+    public Curso save(Curso curso) {
+        try {
+            validateCurso(curso);
+            return cursoRepository.save(curso);
+        } catch (BusinessException e) {
+            throw new BusinessException("Erro ao salvar o curso: " + e.getMessage());
+        }
+    }
+
+    private void validateCurso(Curso curso) {
+        if (curso == null) {
+            throw new BusinessException("O curso não pode ser nulo");
+        }
+
+        Optional.ofNullable(curso.getNome())
+            .filter(nome -> !nome.trim().isEmpty())
+            .filter(nome -> nome.length() <= 100)
+            .orElseThrow(() -> new BusinessException("Nome do curso é obrigatório e deve ter no máximo 100 caracteres"));
+
+        Optional.ofNullable(curso.getDescricao())
+            .ifPresent(descricao -> {
+                if (descricao.length() > 500) {
+                    throw new BusinessException("Descrição do curso deve ter no máximo 500 caracteres");
+                }
+            });
+
+        if (cursoRepository.findByNome(curso.getNome()).isPresent()) {
+            throw new BusinessException("Já existe um curso com este nome");
+        }
     }
 
     public List<Curso> listAll(){
-        List<Curso> cursos = cursoRepository.findAll();
-        if (cursos.isEmpty()) {
-            throw new EmptyListException("Nenhum curso encontrado.");
+        try {
+            List<Curso> cursos = cursoRepository.findAll();
+            if (cursos.isEmpty()) {
+                throw new EmptyListException("Nenhum curso encontrado.");
+            }
+            return cursos;
+        }catch (BusinessException e){
+            throw new BusinessException("Houve um erro, tente mais tarde.");
         }
-        return cursos;
     }
 
     public Curso findById(Long id){
-        return cursoRepository.findById(id)
-                .orElseThrow(() -> new InvalidIdException("Curso com ID " + id + " não encontrado"));
+        try {
+            return cursoRepository.findById(id)
+                    .orElseThrow(() -> new InvalidIdException("Curso com ID " + id + " não encontrado"));
+        }catch (BusinessException e){
+            throw new BusinessException("Houve um erro, tente mais tarde.");
+        }
+    }
+
+    public Curso findUserCourse(HttpServletRequest request){
+        try {
+            Long id = tokenService.getCursoFromRequest(request);
+            if (id == null) {
+                throw new InvalidIdException("Curso não encontrado para o usuário");
+            }
+            return cursoRepository.findById(id)
+                    .orElseThrow(() -> new InvalidIdException("Curso não encontrado"));
+        }catch (BusinessException e){
+            throw new BusinessException("Houve um erro, tente mais tarde.");
+        }
     }
 
     public void deleteById(Long id){
-        Optional<Curso> curso = cursoRepository.findById(id);
-        if(curso.isEmpty()){
-            throw new InvalidIdException("Id inválido!");
+        try {
+            Optional<Curso> curso = cursoRepository.findById(id);
+            if (curso.isEmpty()) {
+                throw new InvalidIdException("Id inválido!");
+            }
+            cursoRepository.deleteById(id);
+        }catch (BusinessException e){
+            throw new BusinessException("Houve um erro, tente mais tarde.");
         }
-        cursoRepository.deleteById(id);
     }
 
     public Curso update(Curso curso, Long id) {
-        return cursoRepository.findById(id)
-                .map(cursoToUpdate -> {
-                    Optional.ofNullable(curso.getNome()).ifPresent(cursoToUpdate::setNome);
-                    Optional.ofNullable(curso.getDescricao()).ifPresent(cursoToUpdate::setDescricao);
-
-                    Optional.ofNullable(curso.getUsuarios())
-                            .filter(usuarios -> !usuarios.isEmpty())
-                            .ifPresent(cursoToUpdate::setUsuarios);
-
-                    Optional.ofNullable(curso.getMaterias())
-                            .filter(materias -> !materias.isEmpty())
-                            .ifPresent(cursoToUpdate::setMaterias);
-
-                    return cursoRepository.save(cursoToUpdate);
-                })
+    try {
+        Curso cursoToUpdate = cursoRepository.findById(id)
                 .orElseThrow(() -> new InvalidIdException("Curso com ID " + id + " não encontrado para atualização"));
-    }
 
+        Optional.ofNullable(curso.getNome()).ifPresent(cursoToUpdate::setNome);
+        Optional.ofNullable(curso.getDescricao()).ifPresent(cursoToUpdate::setDescricao);
+
+        Optional.ofNullable(curso.getUsuarios())
+                .filter(usuarios -> !usuarios.isEmpty())
+                .ifPresent(cursoToUpdate::setUsuarios);
+
+        Optional.ofNullable(curso.getMaterias())
+                .filter(materias -> !materias.isEmpty())
+                .ifPresent(cursoToUpdate::setMaterias);
+
+        return cursoRepository.save(cursoToUpdate);
+        }catch (BusinessException e){
+            throw new BusinessException("Houve um erro, tente mais tarde.");
+        }
+    }
 }
 
 

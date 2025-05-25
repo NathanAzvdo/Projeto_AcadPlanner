@@ -1,6 +1,7 @@
 package com.NathanAzvdo.AcadPlanner.services;
 
 import com.NathanAzvdo.AcadPlanner.entities.User;
+import com.NathanAzvdo.AcadPlanner.exceptions.BusinessException;
 import com.NathanAzvdo.AcadPlanner.exceptions.EmptyFieldException;
 import com.NathanAzvdo.AcadPlanner.exceptions.FieldAlreadyExistsException;
 import com.NathanAzvdo.AcadPlanner.repositories.UserRepository;
@@ -17,19 +18,24 @@ public class UserService {
     }
 
     public User register(User user) {
-        if (user.getNome() == null || user.getEmail() == null ||
-                user.getSenha() == null || user.getCurso().getId() == null) {
-            throw new EmptyFieldException("Preencha todos os campos!");
+        try {
+            if (user.getNome() == null || user.getEmail() == null ||
+                    user.getSenha() == null || user.getCurso().getId() == null) {
+                throw new EmptyFieldException("Preencha todos os campos!");
+            }
+
+
+            if (repository.findByEmail(user.getEmail()).isPresent()) {
+                throw new FieldAlreadyExistsException("Email já cadastrado!");
+            }
+
+            String encryptedPassword = new BCryptPasswordEncoder().encode(user.getSenha());
+            user.setSenha(encryptedPassword);
+
+            return repository.save(user);
+        }catch (BusinessException e){
+            throw new BusinessException("Houve um erro, tente mais tarde.");
         }
-
-        if (repository.findByEmail(user.getEmail()).isPresent()) {
-            throw new FieldAlreadyExistsException("Email já cadastrado!");
-        }
-
-        String encryptedPassword = new BCryptPasswordEncoder().encode(user.getSenha());
-        user.setSenha(encryptedPassword);
-
-        return repository.save(user);
     }
 
 }

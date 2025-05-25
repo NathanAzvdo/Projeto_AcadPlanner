@@ -4,6 +4,7 @@ import com.NathanAzvdo.AcadPlanner.dtos.mappers.CursoMapper;
 import com.NathanAzvdo.AcadPlanner.dtos.responses.CursoResponse;
 import com.NathanAzvdo.AcadPlanner.entities.Curso;
 import com.NathanAzvdo.AcadPlanner.services.CursoService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,14 +24,14 @@ public class CursoController {
         this.cursoService = cursoService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CursoResponse> findById(@PathVariable Long id) {
-        Curso curso = cursoService.findById(id);
+    @GetMapping("/meu-curso")
+    public ResponseEntity<CursoResponse> findUserCourse(HttpServletRequest request) {
+        Curso curso = cursoService.findUserCourse(request);
         return ResponseEntity.ok(CursoMapper.toResponse(curso));
     }
 
     @GetMapping
-    public ResponseEntity<List<CursoResponse>> findAll() {
+    public ResponseEntity<List<CursoResponse>> findAll(HttpServletRequest request) {
         List<Curso> cursos = cursoService.listAll();
 
         List<CursoResponse> responseList = cursos

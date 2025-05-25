@@ -2,6 +2,7 @@ package com.NathanAzvdo.AcadPlanner.services;
 
 import com.NathanAzvdo.AcadPlanner.config.TokenService;
 import com.NathanAzvdo.AcadPlanner.entities.Materia;
+import com.NathanAzvdo.AcadPlanner.exceptions.BusinessException;
 import com.NathanAzvdo.AcadPlanner.exceptions.EmptyListException;
 import com.NathanAzvdo.AcadPlanner.exceptions.InvalidIdException;
 import com.NathanAzvdo.AcadPlanner.repositories.MateriaConcluidaRepository;
@@ -19,68 +20,99 @@ public class MateriaAdminService{
     private final MateriaRepository materiaRepository;
 
     public MateriaAdminService(MateriaRepository materiaRepository) {
-
         this.materiaRepository = materiaRepository;
     }
 
     public Materia save(Materia newMateria) {
-        return materiaRepository.save(newMateria);
-    }
+        try {
+            if (newMateria.getNome() == null || newMateria.getNome().trim().isEmpty()) {
+                throw new IllegalArgumentException("O nome da matéria não pode ser nulo ou vazio");
+            }
 
-    public void deleteById(Long id) {
-        if (!materiaRepository.existsById(id)) {
-            throw new InvalidIdException("Matéria não encontrada para o ID: " + id);
+            if (newMateria.getNome().length() > 100) {
+                throw new IllegalArgumentException("O nome da matéria não pode exceder 100 caracteres");
+            }
+            if (newMateria.getCreditos() <= 0) {
+                throw new IllegalArgumentException("O número de créditos deve ser maior que zero");
+            }
+            if (newMateria.getCursos() == null || newMateria.getCursos().isEmpty()) {
+                throw new IllegalArgumentException("A matéria deve estar associada a pelo menos um curso");
+            }
+            return materiaRepository.save(newMateria);
+        }catch (BusinessException e){
+            throw new BusinessException("Houve um erro, tente mais tarde.");
         }
-        materiaRepository.deleteById(id);
+    }
+    public void deleteById(Long id) {
+        try {
+            if (!materiaRepository.existsById(id)) {
+                throw new InvalidIdException("Matéria não encontrada para o ID: " + id);
+            }
+            materiaRepository.deleteById(id);
+        }catch (BusinessException e){
+                throw new BusinessException("Houve um erro, tente mais tarde.");
+        }
     }
 
     public List<Materia> findAll() {
-        List<Materia> materias =  materiaRepository.findAll();
-        if (materias.isEmpty()) {
-            throw new EmptyListException("Nenhuma matéria encontrada.");
+        try {
+            List<Materia> materias = materiaRepository.findAll();
+            if (materias.isEmpty()) {
+                throw new EmptyListException("Nenhuma matéria encontrada.");
+            }
+            return materias;
+        }catch (BusinessException e){
+            throw new BusinessException("Houve um erro, tente mais tarde.");
         }
-        return materias;
     }
 
     public Materia updateMateria(Materia materia, Long id) {
+        try {
+            Materia materiaAtual = materiaRepository.findById(id)
+                    .orElseThrow(() -> new InvalidIdException("Matéria não encontrada para o ID: " + id));
 
-        return materiaRepository.findById(id)
-                .map(materiaToUpdate -> {
-                    Optional.ofNullable(materia.getNome()).ifPresent(materiaToUpdate::setNome);
-                    Optional.ofNullable(materia.getDescricao()).ifPresent(materiaToUpdate::setDescricao);
+            atualizarCamposValidos(materiaAtual, materia);
 
-                    Optional.of(materia.getCreditos())
-                            .filter(creditos -> creditos != 0)
-                            .ifPresent(materiaToUpdate::setCreditos);
-
-                    Optional.ofNullable(materia.getCursos())
-                            .filter(cursos -> !cursos.isEmpty())
-                            .ifPresent(materiaToUpdate::setCursos);
-
-                    return materiaRepository.save(materiaToUpdate);
-                })
-                .orElseThrow(() -> new InvalidIdException("Matéria não encontrada para o ID: " + id));
+            return materiaRepository.save(materiaAtual);
+        }catch (BusinessException e){
+            throw new BusinessException("Houve um erro, tente mais tarde.");
+        }
     }
 
     public Materia addPreRequisito(Long materiaId, Long preRequisitoId) {
-        Materia materia = materiaRepository.findById(materiaId)
-                .orElseThrow(() -> new RuntimeException("Matéria não encontrada para o ID: " + materiaId));
+        try {
+            Materia materia = materiaRepository.findById(materiaId)
+                    .orElseThrow(() -> new RuntimeException("Matéria não encontrada para o ID: " + materiaId));
 
-        Materia preRequisito = materiaRepository.findById(preRequisitoId)
-                .orElseThrow(() -> new RuntimeException("Pré-requisito não encontrado para o ID: " + preRequisitoId));
+            Materia preRequisito = materiaRepository.findById(preRequisitoId)
+                    .orElseThrow(() -> new RuntimeException("Pré-requisito não encontrado para o ID: " + preRequisitoId));
 
-        materia.getPreRequisitos().add(preRequisito);
-        return materiaRepository.save(materia);
+            materia.getPreRequisitos().add(preRequisito);
+            return materiaRepository.save(materia);
+        }catch (BusinessException e){
+            throw new BusinessException("Houve um erro, tente mais tarde.");
+        }
     }
 
     public Materia removePreRequisito(Long materiaId, Long preRequisitoId) {
-        Materia materia = materiaRepository.findById(materiaId)
-                .orElseThrow(() -> new RuntimeException("Matéria não encontrada para o ID: " + materiaId));
+        try {
+            Materia materia = materiaRepository.findById(materiaId)
+                    .orElseThrow(() -> new RuntimeException("Matéria não encontrada para o ID: " + materiaId));
 
-        Materia preRequisito = materiaRepository.findById(preRequisitoId)
-                .orElseThrow(() -> new RuntimeException("Pré-requisito não encontrado para o ID: " + preRequisitoId));
+            Materia preRequisito = materiaRepository.findById(preRequisitoId)
+                    .orElseThrow(() -> new RuntimeException("Pré-requisito não encontrado para o ID: " + preRequisitoId));
 
-        materia.getPreRequisitos().remove(preRequisito);
-        return materiaRepository.save(materia);
+            materia.getPreRequisitos().remove(preRequisito);
+            return materiaRepository.save(materia);
+        }catch (BusinessException e){
+            throw new BusinessException("Houve um erro, tente mais tarde.");
+        }
+    }
+
+    private void atualizarCamposValidos(Materia materiaAtual, Materia novaMateria) {
+        materiaAtual.setNome(novaMateria.getNome() != null ? novaMateria.getNome() : materiaAtual.getNome());
+        materiaAtual.setDescricao(novaMateria.getDescricao() != null ? novaMateria.getDescricao() : materiaAtual.getDescricao());
+        materiaAtual.setCreditos(novaMateria.getCreditos() != 0 ? novaMateria.getCreditos() : materiaAtual.getCreditos());
+        materiaAtual.setCursos(!novaMateria.getCursos().isEmpty() ? novaMateria.getCursos() : materiaAtual.getCursos());
     }
 }

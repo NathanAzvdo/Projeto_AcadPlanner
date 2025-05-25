@@ -18,11 +18,16 @@ public class CursoAdminController {
         this.cursoService = cursoService;
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<CursoResponse> save(@RequestBody CursoRequest cursoRequest) {
         Curso toCurso = CursoMapper.toEntity(cursoRequest);
         Curso savedCurso = cursoService.save(toCurso);
         return ResponseEntity.ok(CursoMapper.toResponse(savedCurso));
+    }
+
+    @GetMapping
+    public ResponseEntity<?> findAll() {
+        return ResponseEntity.ok(cursoService.listAll());
     }
 
 
