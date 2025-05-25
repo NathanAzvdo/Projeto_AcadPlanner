@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
@@ -27,24 +28,30 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        var token = this.recoverToken(request);
-        if (token != null) {
-            var subject = tokenService.validateToken(token);
-
-            if (subject != null && !subject.isBlank()) {
-                UserDetails userDetails = userRepository.findByEmail(subject).orElse(null);
-
-                if (userDetails != null) {
-                    var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                } else {
-                    System.out.println("Usuário não encontrado para o e-mail: " + subject);
-                }
-            } else {
-                System.out.println("Email inválido ou vazio.");
+        try {
+            var token = this.recoverToken(request);
+            if (token == null) {
+                filterChain.doFilter(request, response);
+                return;
             }
+
+            var subject = Optional.ofNullable(tokenService.validateToken(token))
+                    .orElseThrow(() -> new SecurityException("Token inválido ou expirado"));
+
+            if (subject.isBlank()) {
+                throw new SecurityException("Token com ID vazio");
+            }
+
+            UserDetails userDetails = userRepository.findById(Long.valueOf(subject))
+                    .orElseThrow(() -> new SecurityException("Usuário não encontrado!"));
+
+            var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            filterChain.doFilter(request, response);
+        }catch (Exception e) {
+            throw new SecurityException("Erro na autenticação, entre em contato com o suporte");
         }
-        filterChain.doFilter(request, response);
     }
 
 

@@ -12,7 +12,7 @@ import java.time.LocalDate;
 public class MateriasConcluidas {
 
     @EmbeddedId
-    private MateriasConcluidasId id;
+    private MateriasConcluidasId materiasConcluidasId;
 
     @ManyToOne
     @MapsId("usuarioId")

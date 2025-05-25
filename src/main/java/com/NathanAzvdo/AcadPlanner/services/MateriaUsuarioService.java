@@ -68,13 +68,13 @@ public class MateriaUsuarioService {
         materiasConcluidas.setMateria(materia);
         materiasConcluidas.setDataConclusao(LocalDate.now());
 
-        materiaEmAndamentoRepository.deleteByMateriaEmAndamentoId_UsuarioIdAndMateriaEmAndamentoId_MateriaId(id, materiaId);
+        materiaEmAndamentoRepository.deleteByUsuarioIdAndMateriaId(id, materiaId);
 
         return materiaConcluidaRepository.save(materiasConcluidas);
     }
 
     private void verificarMateriaAndamento(Long id, Long materiaId){
-        boolean materiaEmAndamento = materiaEmAndamentoRepository.existsByMateriaEmAndamentoId_UsuarioIdAndMateriaEmAndamentoId_MateriaId(id, materiaId);
+        boolean materiaEmAndamento = materiaEmAndamentoRepository.existsByUsuarioIdAndMateriaId(id, materiaId);
         if (!materiaEmAndamento) {
             throw new BusinessException("A matéria precisa estar em andamento para ser concluída");
         }
