@@ -1,7 +1,10 @@
 package com.NathanAzvdo.AcadPlanner.controllers;
 
 import com.NathanAzvdo.AcadPlanner.dtos.mappers.MateriaConcluidaMapper;
+import com.NathanAzvdo.AcadPlanner.dtos.mappers.MateriaEmAndamentoMapper;
 import com.NathanAzvdo.AcadPlanner.dtos.responses.MateriaConcluidaResponse;
+import com.NathanAzvdo.AcadPlanner.dtos.responses.MateriaEmAndamentoIdResponse;
+import com.NathanAzvdo.AcadPlanner.dtos.responses.MateriaEmAndamentoRespose;
 import com.NathanAzvdo.AcadPlanner.dtos.responses.MateriaResponse;
 import com.NathanAzvdo.AcadPlanner.services.MateriaUsuarioService;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +25,20 @@ public class MateriaUsuarioController {
 
     @PostMapping("/{idMateria}/concluir/{idUsuario}")
     public ResponseEntity<MateriaConcluidaResponse> concluirMateria(@PathVariable Long idMateria,@PathVariable Long idUsuario){
-        return ResponseEntity.ok(MateriaConcluidaMapper.toResponse(materiaUsuarioService.concluirMateria(idMateria, idUsuario)));
+        return ResponseEntity.ok(MateriaConcluidaMapper.toResponse(
+                materiaUsuarioService.concluirMateria(
+                        idMateria,
+                        idUsuario))
+        );
     }
 
     @PostMapping("/{idMateria}/ingressar/{idUsuario}")
-    public ResponseEntity<MateriaConcluidaResponse> concluirMateria(@PathVariable Long idMateria,@PathVariable Long idUsuario){
-        return ResponseEntity.ok(MateriaConcluidaMapper.toResponse(materiaUsuarioService.concluirMateria(idMateria, idUsuario)));
+    public ResponseEntity<MateriaEmAndamentoRespose> ingressarMateria(@PathVariable Long idMateria, @PathVariable Long idUsuario){
+        return ResponseEntity.ok(MateriaEmAndamentoMapper.toResponse(
+                materiaUsuarioService.novaMateriaEmAndamento(
+                        idMateria,
+                        idUsuario)
+        ));
     }
 
 
