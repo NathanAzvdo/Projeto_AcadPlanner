@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/user/curso")
+@RequestMapping("/curso")
 public class CursoController {
 
     private final CursoService cursoService;

@@ -14,9 +14,9 @@ import java.util.Optional;
 public class CursoService {
 
     private final CursoRepository cursoRepository;
-    private final MateriaService materiaService;
+    private final MateriaAdminService materiaService;
 
-    public CursoService(CursoRepository cursoRepository, MateriaService materiaService){
+    public CursoService(CursoRepository cursoRepository, MateriaAdminService materiaService){
         this.cursoRepository = cursoRepository;
         this.materiaService =  materiaService;
 

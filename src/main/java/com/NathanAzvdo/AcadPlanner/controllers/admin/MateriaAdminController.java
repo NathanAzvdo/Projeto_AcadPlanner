@@ -5,16 +5,18 @@ import com.NathanAzvdo.AcadPlanner.dtos.requests.MateriaRequest;
 import com.NathanAzvdo.AcadPlanner.dtos.responses.MateriaResponse;
 import com.NathanAzvdo.AcadPlanner.entities.Materia;
 import org.springframework.http.ResponseEntity;
-import com.NathanAzvdo.AcadPlanner.services.MateriaService;
+import com.NathanAzvdo.AcadPlanner.services.MateriaAdminService;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin/materia")
 public class MateriaAdminController {
 
-    private final MateriaService materiaService;
+    private final MateriaAdminService materiaService;
 
-    public MateriaAdminController(MateriaService materiaService) {
+    public MateriaAdminController(MateriaAdminService materiaService) {
         this.materiaService = materiaService;
     }
 
@@ -48,6 +50,14 @@ public class MateriaAdminController {
     public ResponseEntity<MateriaResponse> removePreRequisito(@PathVariable Long materiaId, @PathVariable Long preRequisitoId) {
         Materia updatedMateria = materiaService.removePreRequisito(materiaId, preRequisitoId);
         return ResponseEntity.ok().body(MateriaMapper.toMateriaResponse(updatedMateria));
+    }
+    @GetMapping
+    public ResponseEntity<List<MateriaResponse>> findAll(@PathVariable Long idCurso) {
+        List<Materia> materias = materiaService.findAll();
+        List<MateriaResponse> response = materias.stream()
+                .map(MateriaMapper::toMateriaResponse)
+                .toList();
+        return ResponseEntity.ok().body(response);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.NathanAzvdo.AcadPlanner.controllers.user;
 
+import com.NathanAzvdo.AcadPlanner.config.TokenService;
 import com.NathanAzvdo.AcadPlanner.dtos.mappers.MateriaConcluidaMapper;
 import com.NathanAzvdo.AcadPlanner.dtos.mappers.MateriaEmAndamentoMapper;
 import com.NathanAzvdo.AcadPlanner.dtos.mappers.MateriaMapper;
@@ -7,46 +8,46 @@ import com.NathanAzvdo.AcadPlanner.dtos.responses.MateriaConcluidaResponse;
 import com.NathanAzvdo.AcadPlanner.dtos.responses.MateriaEmAndamentoRespose;
 import com.NathanAzvdo.AcadPlanner.dtos.responses.MateriaResponse;
 import com.NathanAzvdo.AcadPlanner.entities.Materia;
+import com.NathanAzvdo.AcadPlanner.services.MateriaAdminService;
 import com.NathanAzvdo.AcadPlanner.services.MateriaService;
-import com.NathanAzvdo.AcadPlanner.services.MateriaUsuarioService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/user/materia")
+@RequestMapping("/materia")
 public class MateriaController {
 
-    private final MateriaUsuarioService materiaUsuarioService;
     private final MateriaService materiaService;
 
-    public MateriaController(MateriaUsuarioService materiaUsuarioService, MateriaService materiaService){
-        this.materiaUsuarioService = materiaUsuarioService;
+    public MateriaController(MateriaService materiaService,
+                             TokenService tokenService) {
         this.materiaService = materiaService;
     }
 
-    @PostMapping("/{idMateria}/concluir/{idUsuario}")
-    public ResponseEntity<MateriaConcluidaResponse> concluirMateria(@PathVariable Long idMateria,@PathVariable Long idUsuario){
+
+    @PostMapping("/concluir/{idMateria}")
+    public ResponseEntity<MateriaConcluidaResponse> concluirMateria(@PathVariable Long idMateria, HttpServletRequest request){
         return ResponseEntity.ok(MateriaConcluidaMapper.toResponse(
-                materiaUsuarioService.concluirMateria(
-                        idMateria,
-                        idUsuario))
+                materiaService.concluirMateria(
+                        idMateria, request))
         );
     }
 
-    @PostMapping("/{idMateria}/ingressar/{idUsuario}")
-    public ResponseEntity<MateriaEmAndamentoRespose> ingressarMateria(@PathVariable Long idMateria, @PathVariable Long idUsuario){
+    @PostMapping("/ingressar/{idMateria}")
+    public ResponseEntity<MateriaEmAndamentoRespose> ingressarMateria(@PathVariable Long idMateria, HttpServletRequest request){
         return ResponseEntity.ok(MateriaEmAndamentoMapper.toResponse(
-                materiaUsuarioService.novaMateriaEmAndamento(
+                materiaService.novaMateriaEmAndamento(
                         idMateria,
-                        idUsuario)
-        ));
+                        request))
+        );
     }
 
     @GetMapping
-    public ResponseEntity<List<MateriaResponse>> findAll() {
-        List<Materia> materias = materiaService.findAll();
+    public ResponseEntity<List<MateriaResponse>> findAll(HttpServletRequest request) {
+        List<Materia> materias = materiaService.findAll(request);
         List<MateriaResponse> response = materias.stream()
                 .map(MateriaMapper::toMateriaResponse)
                 .toList();
