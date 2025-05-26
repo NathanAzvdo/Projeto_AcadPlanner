@@ -30,16 +30,4 @@ public class CursoController {
         return ResponseEntity.ok(CursoMapper.toResponse(curso));
     }
 
-    @GetMapping
-    public ResponseEntity<List<CursoResponse>> findAll(HttpServletRequest request) {
-        List<Curso> cursos = cursoService.listAll();
-
-        List<CursoResponse> responseList = cursos
-                .stream()
-                .map(CursoMapper::toResponse)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(responseList);
-    }
-
 }

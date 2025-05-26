@@ -1,14 +1,10 @@
 package com.NathanAzvdo.AcadPlanner.services;
 
-import com.NathanAzvdo.AcadPlanner.config.TokenService;
 import com.NathanAzvdo.AcadPlanner.entities.Materia;
 import com.NathanAzvdo.AcadPlanner.exceptions.BusinessException;
 import com.NathanAzvdo.AcadPlanner.exceptions.EmptyListException;
 import com.NathanAzvdo.AcadPlanner.exceptions.InvalidIdException;
-import com.NathanAzvdo.AcadPlanner.repositories.MateriaConcluidaRepository;
-import com.NathanAzvdo.AcadPlanner.repositories.MateriaEmAndamentoRepository;
 import com.NathanAzvdo.AcadPlanner.repositories.MateriaRepository;
-import com.NathanAzvdo.AcadPlanner.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

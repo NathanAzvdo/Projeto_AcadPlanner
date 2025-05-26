@@ -17,12 +17,10 @@ import java.util.Optional;
 public class CursoService {
 
     private final CursoRepository cursoRepository;
-    private final MateriaAdminService materiaService;
     private final TokenService tokenService;
 
-    public CursoService(CursoRepository cursoRepository, MateriaAdminService materiaService, TokenService tokenService){
+    public CursoService(CursoRepository cursoRepository,TokenService tokenService){
         this.cursoRepository = cursoRepository;
-        this.materiaService =  materiaService;
         this.tokenService = tokenService;
     }
 

@@ -1,6 +1,7 @@
 package com.NathanAzvdo.AcadPlanner.services;
 
 import com.NathanAzvdo.AcadPlanner.config.TokenService;
+import com.NathanAzvdo.AcadPlanner.dtos.responses.MateriaBasicaResponse;
 import com.NathanAzvdo.AcadPlanner.entities.*;
 import com.NathanAzvdo.AcadPlanner.exceptions.BusinessException;
 import com.NathanAzvdo.AcadPlanner.exceptions.EmptyListException;
@@ -10,7 +11,6 @@ import com.NathanAzvdo.AcadPlanner.repositories.MateriaEmAndamentoRepository;
 import com.NathanAzvdo.AcadPlanner.repositories.MateriaRepository;
 import com.NathanAzvdo.AcadPlanner.repositories.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import org.antlr.v4.runtime.Token;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -34,7 +34,7 @@ public class MateriaService {
         this.tokenService = tokenService;
     }
 
-    public MateriasEmAndamento novaMateriaEmAndamento(Long materiaId, HttpServletRequest request) {
+    public void novaMateriaEmAndamento(Long materiaId, HttpServletRequest request) {
         try{
             Long id = tokenService.getUsuarioIdFromRequest(request);
 
@@ -60,13 +60,13 @@ public class MateriaService {
         materiasEmAndamento.setMateriaId(materia.getId());
         materiasEmAndamento.setDataInicio(LocalDate.now());
 
-        return materiaEmAndamentoRepository.save(materiasEmAndamento);
+            materiaEmAndamentoRepository.save(materiasEmAndamento);
         }catch (BusinessException e){
             throw new BusinessException("Houve um erro, tente mais tarde.");
         }
     }
 
-    public MateriasConcluidas concluirMateria(Long materiaId, HttpServletRequest request) {
+    public void concluirMateria(Long materiaId, HttpServletRequest request) {
         try{
             Long id = tokenService.getUsuarioIdFromRequest(request);
             User user = userRepository.findById(id).orElseThrow(() ->
@@ -86,7 +86,7 @@ public class MateriaService {
 
             materiaEmAndamentoRepository.deleteByUsuarioIdAndMateriaId(id, materiaId);
 
-            return materiaConcluidaRepository.save(materiasConcluidas);
+            materiaConcluidaRepository.save(materiasConcluidas);
         }catch (BusinessException e){
             throw new BusinessException("Houve um erro, tente mais tarde.");
         }
@@ -104,6 +104,18 @@ public class MateriaService {
             throw new BusinessException("Houve um erro, tente mais tarde.");
         }
     }
+    public List<MateriasConcluidas> materiasConcluidas(HttpServletRequest request) {
+                    try {
+                        Long id = tokenService.getUsuarioIdFromRequest(request);
+                        List<MateriasConcluidas> materiasConcluidas = materiaConcluidaRepository.findByUsuarioId(id);
+                        if (materiasConcluidas.isEmpty()) {
+                            throw new EmptyListException("Nenhuma matéria concluída encontrada.");
+                        }
+                        return materiasConcluidas;
+                    } catch (BusinessException e) {
+                        throw new BusinessException("Houve um erro, tente mais tarde.");
+                    }
+                }
 
     public Materia findById(Long id) {
         try{
@@ -127,6 +139,8 @@ public class MateriaService {
             throw new BusinessException("Houve um erro, tente mais tarde.");
         }
     }
+
+
 
     private void verificarMateriaAndamento(Long id, Long materiaId){
         try {

@@ -29,7 +29,6 @@ public class CursoMapper {
         if (request == null) return null;
 
         Curso curso = new Curso();
-        curso.setId(request.id());
         curso.setNome(request.nome());
         curso.setDescricao(request.descricao());
 

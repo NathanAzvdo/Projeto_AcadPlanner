@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/curso")
 public class CursoAdminController {
 
-    private CursoService cursoService;
+    private final CursoService cursoService;
 
     public CursoAdminController(CursoService cursoService){
         this.cursoService = cursoService;

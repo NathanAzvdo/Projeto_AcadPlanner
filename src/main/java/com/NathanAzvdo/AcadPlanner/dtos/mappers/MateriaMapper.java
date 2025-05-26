@@ -2,9 +2,11 @@ package com.NathanAzvdo.AcadPlanner.dtos.mappers;
 
 import com.NathanAzvdo.AcadPlanner.dtos.requests.MateriaRequest;
 import com.NathanAzvdo.AcadPlanner.dtos.responses.CursoBasicoResponse;
+import com.NathanAzvdo.AcadPlanner.dtos.responses.MateriaBasicaResponse;
 import com.NathanAzvdo.AcadPlanner.dtos.responses.MateriaResponse;
 import com.NathanAzvdo.AcadPlanner.entities.Curso;
 import com.NathanAzvdo.AcadPlanner.entities.Materia;
+import com.NathanAzvdo.AcadPlanner.entities.MateriasConcluidas;
 import lombok.experimental.UtilityClass;
 
 import java.util.List;
@@ -45,6 +47,14 @@ public class MateriaMapper {
                         .map(Materia::getNome)
                         .collect(Collectors.toList()))
                 .build();
+    }
+
+    public static MateriaBasicaResponse toMateriaBasicaResponse(MateriasConcluidas materia) {
+        return new MateriaBasicaResponse(
+                materia.getMateria().getNome(),
+                materia.getMateria().getDescricao(),
+                materia.getMateria().getCreditos()
+        );
     }
 
 }
