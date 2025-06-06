@@ -1,5 +1,6 @@
 package com.NathanAzvdo.AcadPlanner.config;
 
+import com.NathanAzvdo.AcadPlanner.exceptions.FilterException;
 import com.NathanAzvdo.AcadPlanner.repositories.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -50,7 +51,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         }catch (Exception e) {
-            throw new SecurityException("Erro na autenticação, entre em contato com o suporte");
+            throw new FilterException("Erro na autenticação, entre em contato com o suporte");
         }
     }
 
