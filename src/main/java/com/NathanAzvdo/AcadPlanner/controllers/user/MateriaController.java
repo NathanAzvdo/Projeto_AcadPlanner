@@ -58,9 +58,9 @@ public class MateriaController {
         return ResponseEntity.ok().body(MateriaMapper.toMateriaResponse(materia));
     }
 
-    @GetMapping("/{id}/pre-requisito")
-    public ResponseEntity<List<MateriaResponse>> getPreRequisitos(@PathVariable Long id) {
-        List<Materia> preRequisitos = materiaService.getPreRequisitos(id);
+    @GetMapping("/{materiaId}/pre-requisito")
+    public ResponseEntity<List<MateriaResponse>> getPreRequisitos(@PathVariable Long materiaId) {
+        List<Materia> preRequisitos = materiaService.getPreRequisitos(materiaId);
         List<MateriaResponse> response = preRequisitos.stream()
                 .map(MateriaMapper::toMateriaResponse)
                 .toList();

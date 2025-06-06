@@ -1,7 +1,6 @@
 package com.NathanAzvdo.AcadPlanner.services;
 
 import com.NathanAzvdo.AcadPlanner.config.TokenService;
-import com.NathanAzvdo.AcadPlanner.dtos.responses.MateriaBasicaResponse;
 import com.NathanAzvdo.AcadPlanner.entities.*;
 import com.NathanAzvdo.AcadPlanner.exceptions.BusinessException;
 import com.NathanAzvdo.AcadPlanner.exceptions.EmptyListException;
@@ -135,10 +134,10 @@ public class MateriaService {
     public List<Materia> getPreRequisitos(Long materiaId) {
         try {
             Materia materia = materiaRepository.findById(materiaId)
-                    .orElseThrow(() -> new RuntimeException("Matéria não encontrada para o ID: " + materiaId));
+                    .orElseThrow(() -> new RuntimeException("Matéria não encontrada"));
 
             if (materia.getPreRequisitos().isEmpty()) {
-                throw new RuntimeException("Nenhum pré-requisito encontrado para a matéria com ID: " + materiaId);
+                throw new EmptyListException("Nenhum pré-requisito encontrado para a matéria. ");
             }
             return materia.getPreRequisitos();
         }catch (BusinessException e){

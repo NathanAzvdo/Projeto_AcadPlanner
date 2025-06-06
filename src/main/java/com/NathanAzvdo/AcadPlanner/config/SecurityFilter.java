@@ -51,8 +51,10 @@ public class SecurityFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         }catch (Exception e) {
+            logger.error("Erro durante o filtro de autenticação", e); // ou System.err.println temporariamente
             throw new FilterException("Erro na autenticação, entre em contato com o suporte");
         }
+
     }
 
 
