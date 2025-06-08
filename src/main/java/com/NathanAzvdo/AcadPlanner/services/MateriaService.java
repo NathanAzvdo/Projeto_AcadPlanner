@@ -10,6 +10,7 @@ import com.NathanAzvdo.AcadPlanner.repositories.MateriaEmAndamentoRepository;
 import com.NathanAzvdo.AcadPlanner.repositories.MateriaRepository;
 import com.NathanAzvdo.AcadPlanner.repositories.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -34,68 +35,69 @@ public class MateriaService {
     }
 
     public void novaMateriaEmAndamento(Long materiaId, HttpServletRequest request) {
-        try{
-            Long id = tokenService.getUsuarioIdFromRequest(request);
+        Long usuarioId = tokenService.getUsuarioIdFromRequest(request);
 
+        User user = userRepository.findById(usuarioId).orElseThrow(() ->
+                new InvalidIdException("Usuário não encontrado com o ID: " + usuarioId));
 
-            User user = userRepository.findById(id).orElseThrow(() ->
-                new InvalidIdException("Usuário não encontrado com o ID: " + id));
-
-            Materia materia = materiaRepository.findById(materiaId).orElseThrow(() ->
+        Materia materia = materiaRepository.findById(materiaId).orElseThrow(() ->
                 new InvalidIdException("Matéria não encontrada com Id: " + materiaId));
 
-            boolean materiaEmAndamento = verificarMateriaAndamento(id, materiaId);
-
-            if(materiaEmAndamento){
-                throw new BusinessException("Você já está cursando a matéria " + materia.getNome() + ".");
-            }
-
-            if (!materia.getPreRequisitos().isEmpty()) {
-                for (Materia preRequisito : materia.getPreRequisitos()) {
-                    boolean concluiu = materiaConcluidaRepository.existsByMateriasConcluidasId_UsuarioIdAndMateriasConcluidasId_MateriaId(id, preRequisito.getId());
-                    if (!concluiu) {
-                        throw new BusinessException("Você precisa concluir " + preRequisito.getNome() + " antes de cursar " + materia.getNome());
-                    }
-                }
-            }
-
-            MateriasEmAndamentoId materiasEmAndamentoId = new MateriasEmAndamentoId(id, materiaId);
-            MateriasEmAndamento materiasEmAndamento = new MateriasEmAndamento();
-            materiasEmAndamento.setUsuarioId(user.getId());
-            materiasEmAndamento.setMateriaId(materia.getId());
-            materiasEmAndamento.setDataInicio(LocalDate.now());
-
-            materiaEmAndamentoRepository.save(materiasEmAndamento);
-        }catch (BusinessException e){
-            throw new BusinessException("Houve um erro, tente mais tarde.");
+        if (verificarMateriaAndamento(usuarioId, materiaId)) {
+            throw new BusinessException("Você já está cursando a matéria " + materia.getNome() + ".");
         }
-    }
 
-    public void concluirMateria(Long materiaId, HttpServletRequest request) {
-            Long id = tokenService.getUsuarioIdFromRequest(request);
-            User user = userRepository.findById(id).orElseThrow(() ->
-                    new InvalidIdException("Usuário não encontrado com o ID: " + id));
-
-            Materia materia = materiaRepository.findById(materiaId).orElseThrow(() ->
-                    new InvalidIdException("Matéria não encontrada com Id: " + materiaId));
-
-            boolean materiaEmAndamento = verificarMateriaAndamento(id, materiaId);
-
-            if(!materiaEmAndamento) {
-                throw new BusinessException("Você não está cursando a matéria " + materia.getNome() + ".");
+        for (Materia preRequisito : materia.getPreRequisitos()) {
+            boolean concluiu = materiaConcluidaRepository
+                    .existsByMateriasConcluidasId_UsuarioIdAndMateriasConcluidasId_MateriaId(usuarioId, preRequisito.getId());
+            if (!concluiu) {
+                throw new BusinessException("Você precisa concluir " + preRequisito.getNome() +
+                        " antes de cursar " + materia.getNome() + ".");
             }
+        }
 
-            MateriasConcluidasId materiasConcluidasId = new MateriasConcluidasId(id, materiaId);
+        MateriasEmAndamento materiasEmAndamento = new MateriasEmAndamento();
+        materiasEmAndamento.setUsuarioId(user.getId());
+        materiasEmAndamento.setMateriaId(materia.getId());
+        materiasEmAndamento.setDataInicio(LocalDate.now());
 
-            MateriasConcluidas materiasConcluidas = new MateriasConcluidas();
-            materiasConcluidas.setUsuario(user);
-            materiasConcluidas.setMateria(materia);
-            materiasConcluidas.setDataConclusao(LocalDate.now());
-
-            materiaEmAndamentoRepository.deleteByUsuarioIdAndMateriaId(id, materiaId);
-
-            materiaConcluidaRepository.save(materiasConcluidas);
+        materiaEmAndamentoRepository.save(materiasEmAndamento);
     }
+
+    @Transactional
+    public void concluirMateria(Long materiaId, HttpServletRequest request) {
+        if (materiaId == null) {
+            throw new InvalidIdException("ID da matéria não pode ser nulo");
+        }
+
+        Long usuarioId = tokenService.getUsuarioIdFromRequest(request);
+
+        if (usuarioId == null) {
+            throw new BusinessException("Não foi possível identificar o usuário");
+        }
+
+        User user = userRepository.findById(usuarioId).orElseThrow(() ->
+                new InvalidIdException("Usuário não encontrado com o ID: " + usuarioId));
+
+        Materia materia = materiaRepository.findById(materiaId).orElseThrow(() ->
+                new InvalidIdException("Matéria não encontrada com Id: " + materiaId));
+
+        if (!verificarMateriaAndamento(usuarioId, materiaId)) {
+            throw new BusinessException("Você não está cursando a matéria " + materia.getNome() + ".");
+        }
+
+        MateriasConcluidasId materiasConcluidasId = new MateriasConcluidasId(usuarioId, materiaId);
+
+        MateriasConcluidas materiasConcluidas = new MateriasConcluidas();
+        materiasConcluidas.setMateriasConcluidasId(materiasConcluidasId);
+        materiasConcluidas.setUsuario(user);
+        materiasConcluidas.setMateria(materia);
+        materiasConcluidas.setDataConclusao(LocalDate.now());
+
+        materiaEmAndamentoRepository.deleteByUsuarioIdAndMateriaId(usuarioId, materiaId);
+        materiaConcluidaRepository.save(materiasConcluidas);
+    }
+
 
     public List<Materia> findMateriasCurso(HttpServletRequest request) {
         try {
@@ -110,17 +112,17 @@ public class MateriaService {
         }
     }
     public List<MateriasConcluidas> materiasConcluidas(HttpServletRequest request) {
-                    try {
-                        Long id = tokenService.getUsuarioIdFromRequest(request);
-                        List<MateriasConcluidas> materiasConcluidas = materiaConcluidaRepository.findByUsuarioId(id);
-                        if (materiasConcluidas.isEmpty()) {
-                            throw new EmptyListException("Nenhuma matéria concluída encontrada.");
-                        }
-                        return materiasConcluidas;
-                    } catch (BusinessException e) {
-                        throw new BusinessException("Houve um erro, tente mais tarde.");
-                    }
-                }
+        try {
+            Long id = tokenService.getUsuarioIdFromRequest(request);
+            List<MateriasConcluidas> materiasConcluidas = materiaConcluidaRepository.findByUsuarioId(id);
+            if (materiasConcluidas.isEmpty()) {
+                throw new EmptyListException("Nenhuma matéria concluída encontrada.");
+            }
+            return materiasConcluidas;
+        } catch (BusinessException e) {
+            throw new BusinessException("Houve um erro, tente mais tarde.");
+        }
+    }
 
     public Materia findById(Long id) {
         try{

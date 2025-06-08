@@ -28,16 +28,25 @@ public class SecurityFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
         try {
+            logger.debug("Iniciando filtro de autenticação para: " + request.getRequestURI());
+
             var token = this.recoverToken(request);
             if (token == null) {
+                logger.debug("Token ausente, seguindo sem autenticação");
                 filterChain.doFilter(request, response);
                 return;
             }
 
+            logger.debug("Token recebido: " + token);
+
             var subject = Optional.ofNullable(tokenService.validateToken(token))
                     .orElseThrow(() -> new SecurityException("Token inválido ou expirado"));
+
+            logger.debug("Token válido, subject extraído: " + subject);
 
             if (subject.isBlank()) {
                 throw new SecurityException("Token com ID vazio");
@@ -46,16 +55,18 @@ public class SecurityFilter extends OncePerRequestFilter {
             UserDetails userDetails = userRepository.findById(Long.valueOf(subject))
                     .orElseThrow(() -> new SecurityException("Usuário não encontrado!"));
 
+            logger.debug("Usuário autenticado: " + userDetails.getUsername());
+
             var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             filterChain.doFilter(request, response);
-        }catch (Exception e) {
-            logger.error("Erro durante o filtro de autenticação", e); // ou System.err.println temporariamente
+        } catch (Exception e) {
+            logger.error("Erro durante o filtro de autenticação para rota " + request.getRequestURI(), e);
             throw new FilterException("Erro na autenticação, entre em contato com o suporte");
         }
-
     }
+
 
 
     private String recoverToken(HttpServletRequest request) {
