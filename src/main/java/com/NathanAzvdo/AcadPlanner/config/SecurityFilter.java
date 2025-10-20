@@ -1,5 +1,6 @@
 package com.NathanAzvdo.AcadPlanner.config;
 
+import com.NathanAzvdo.AcadPlanner.entities.User;
 import com.NathanAzvdo.AcadPlanner.exceptions.FilterException;
 import com.NathanAzvdo.AcadPlanner.repositories.UserRepository;
 import jakarta.servlet.FilterChain;
@@ -52,12 +53,12 @@ public class SecurityFilter extends OncePerRequestFilter {
                 throw new SecurityException("Token com ID vazio");
             }
 
-            UserDetails userDetails = userRepository.findById(Long.valueOf(subject))
+            User user = userRepository.findById(Long.valueOf(subject))
                     .orElseThrow(() -> new SecurityException("Usuário não encontrado!"));
 
-            logger.debug("Usuário autenticado: " + userDetails.getUsername());
+            logger.debug("Usuário autenticado: " + user.getEmail());
 
-            var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             filterChain.doFilter(request, response);

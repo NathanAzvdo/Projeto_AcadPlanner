@@ -1,6 +1,5 @@
 package com.NathanAzvdo.AcadPlanner.services;
 
-import com.NathanAzvdo.AcadPlanner.config.TokenService;
 import com.NathanAzvdo.AcadPlanner.entities.*;
 import com.NathanAzvdo.AcadPlanner.exceptions.BusinessException;
 import com.NathanAzvdo.AcadPlanner.exceptions.EmptyListException;
@@ -9,7 +8,6 @@ import com.NathanAzvdo.AcadPlanner.repositories.MateriaConcluidaRepository;
 import com.NathanAzvdo.AcadPlanner.repositories.MateriaEmAndamentoRepository;
 import com.NathanAzvdo.AcadPlanner.repositories.MateriaRepository;
 import com.NathanAzvdo.AcadPlanner.repositories.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -23,22 +21,17 @@ public class MateriaService {
     private final MateriaConcluidaRepository materiaConcluidaRepository;
     private final UserRepository userRepository;
     private final MateriaEmAndamentoRepository materiaEmAndamentoRepository;
-    private final TokenService tokenService;
-
     public MateriaService(MateriaRepository materiaRepository, MateriaConcluidaRepository materiaConcluidaRepository
-    , UserRepository userRepository, MateriaEmAndamentoRepository materiaEmAndamentoRepository, TokenService tokenService) {
+            , UserRepository userRepository, MateriaEmAndamentoRepository materiaEmAndamentoRepository) {
         this.materiaRepository= materiaRepository;
         this.materiaConcluidaRepository = materiaConcluidaRepository;
         this.userRepository = userRepository;
         this.materiaEmAndamentoRepository = materiaEmAndamentoRepository;
-        this.tokenService = tokenService;
     }
 
-    public void novaMateriaEmAndamento(Long materiaId, HttpServletRequest request) {
-        Long usuarioId = tokenService.getUsuarioIdFromRequest(request);
-
-        User user = userRepository.findById(usuarioId).orElseThrow(() ->
-                new InvalidIdException("Usuário não encontrado com o ID: " + usuarioId));
+    // Método alterado para receber User
+    public void novaMateriaEmAndamento(Long materiaId, User user) {
+        Long usuarioId = user.getId();
 
         Materia materia = materiaRepository.findById(materiaId).orElseThrow(() ->
                 new InvalidIdException("Matéria não encontrada com Id: " + materiaId));
@@ -65,19 +58,16 @@ public class MateriaService {
     }
 
     @Transactional
-    public void concluirMateria(Long materiaId, HttpServletRequest request) {
+    public void concluirMateria(Long materiaId, User user) {
         if (materiaId == null) {
             throw new InvalidIdException("ID da matéria não pode ser nulo");
         }
 
-        Long usuarioId = tokenService.getUsuarioIdFromRequest(request);
+        Long usuarioId = user.getId();
 
         if (usuarioId == null) {
             throw new BusinessException("Não foi possível identificar o usuário");
         }
-
-        User user = userRepository.findById(usuarioId).orElseThrow(() ->
-                new InvalidIdException("Usuário não encontrado com o ID: " + usuarioId));
 
         Materia materia = materiaRepository.findById(materiaId).orElseThrow(() ->
                 new InvalidIdException("Matéria não encontrada com Id: " + materiaId));
@@ -98,10 +88,8 @@ public class MateriaService {
         materiaConcluidaRepository.save(materiasConcluidas);
     }
 
-
-    public List<Materia> findMateriasCurso(HttpServletRequest request) {
+    public List<Materia> findMateriasCurso(Long cursoId) {
         try {
-            Long cursoId = tokenService.getCursoFromRequest(request);
             List<Materia> materias = materiaRepository.findByCursosId(cursoId);
             if (materias.isEmpty()) {
                 throw new EmptyListException("Nenhuma matéria encontrada.");
@@ -111,10 +99,10 @@ public class MateriaService {
             throw new BusinessException("Houve um erro, tente mais tarde.");
         }
     }
-    public List<MateriasConcluidas> materiasConcluidas(HttpServletRequest request) {
+
+    public List<MateriasConcluidas> materiasConcluidas(Long usuarioId) {
         try {
-            Long id = tokenService.getUsuarioIdFromRequest(request);
-            List<MateriasConcluidas> materiasConcluidas = materiaConcluidaRepository.findByUsuarioId(id);
+            List<MateriasConcluidas> materiasConcluidas = materiaConcluidaRepository.findByUsuarioId(usuarioId);
             if (materiasConcluidas.isEmpty()) {
                 throw new EmptyListException("Nenhuma matéria concluída encontrada.");
             }
@@ -147,8 +135,6 @@ public class MateriaService {
         }
     }
 
-
-
     private boolean verificarMateriaAndamento(Long id, Long materiaId){
         try {
             boolean materiaEmAndamento = materiaEmAndamentoRepository.existsByUsuarioIdAndMateriaId(id, materiaId);
@@ -161,4 +147,3 @@ public class MateriaService {
         }
     }
 }
-

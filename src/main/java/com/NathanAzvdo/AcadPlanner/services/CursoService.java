@@ -1,13 +1,10 @@
 package com.NathanAzvdo.AcadPlanner.services;
 
-
-import com.NathanAzvdo.AcadPlanner.config.TokenService;
 import com.NathanAzvdo.AcadPlanner.entities.Curso;
 import com.NathanAzvdo.AcadPlanner.exceptions.BusinessException;
 import com.NathanAzvdo.AcadPlanner.exceptions.EmptyListException;
 import com.NathanAzvdo.AcadPlanner.exceptions.InvalidIdException;
 import com.NathanAzvdo.AcadPlanner.repositories.CursoRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,11 +14,9 @@ import java.util.Optional;
 public class CursoService {
 
     private final CursoRepository cursoRepository;
-    private final TokenService tokenService;
 
-    public CursoService(CursoRepository cursoRepository,TokenService tokenService){
+    public CursoService(CursoRepository cursoRepository){
         this.cursoRepository = cursoRepository;
-        this.tokenService = tokenService;
     }
 
     public Curso save(Curso curso) {
@@ -39,16 +34,16 @@ public class CursoService {
         }
 
         Optional.ofNullable(curso.getNome())
-            .filter(nome -> !nome.trim().isEmpty())
-            .filter(nome -> nome.length() <= 100)
-            .orElseThrow(() -> new BusinessException("Nome do curso é obrigatório e deve ter no máximo 100 caracteres"));
+                .filter(nome -> !nome.trim().isEmpty())
+                .filter(nome -> nome.length() <= 100)
+                .orElseThrow(() -> new BusinessException("Nome do curso é obrigatório e deve ter no máximo 100 caracteres"));
 
         Optional.ofNullable(curso.getDescricao())
-            .ifPresent(descricao -> {
-                if (descricao.length() > 500) {
-                    throw new BusinessException("Descrição do curso deve ter no máximo 500 caracteres");
-                }
-            });
+                .ifPresent(descricao -> {
+                    if (descricao.length() > 500) {
+                        throw new BusinessException("Descrição do curso deve ter no máximo 500 caracteres");
+                    }
+                });
 
         if (cursoRepository.findByNome(curso.getNome()).isPresent()) {
             throw new BusinessException("Já existe um curso com este nome");
@@ -76,13 +71,12 @@ public class CursoService {
         }
     }
 
-    public Curso findUserCourse(HttpServletRequest request){
+    public Curso findUserCourse(Long cursoId){
         try {
-            Long id = tokenService.getCursoFromRequest(request);
-            if (id == null) {
+            if (cursoId == null) {
                 throw new InvalidIdException("Curso não encontrado para o usuário");
             }
-            return cursoRepository.findById(id)
+            return cursoRepository.findById(cursoId)
                     .orElseThrow(() -> new InvalidIdException("Curso não encontrado"));
         }catch (BusinessException e){
             throw new BusinessException("Houve um erro, tente mais tarde.");
@@ -102,49 +96,24 @@ public class CursoService {
     }
 
     public Curso update(Curso curso, Long id) {
-    try {
-        Curso cursoToUpdate = cursoRepository.findById(id)
-                .orElseThrow(() -> new InvalidIdException("Curso com ID " + id + " não encontrado para atualização"));
+        try {
+            Curso cursoToUpdate = cursoRepository.findById(id)
+                    .orElseThrow(() -> new InvalidIdException("Curso com ID " + id + " não encontrado para atualização"));
 
-        Optional.ofNullable(curso.getNome()).ifPresent(cursoToUpdate::setNome);
-        Optional.ofNullable(curso.getDescricao()).ifPresent(cursoToUpdate::setDescricao);
+            Optional.ofNullable(curso.getNome()).ifPresent(cursoToUpdate::setNome);
+            Optional.ofNullable(curso.getDescricao()).ifPresent(cursoToUpdate::setDescricao);
 
-        Optional.ofNullable(curso.getUsuarios())
-                .filter(usuarios -> !usuarios.isEmpty())
-                .ifPresent(cursoToUpdate::setUsuarios);
+            Optional.ofNullable(curso.getUsuarios())
+                    .filter(usuarios -> !usuarios.isEmpty())
+                    .ifPresent(cursoToUpdate::setUsuarios);
 
-        Optional.ofNullable(curso.getMaterias())
-                .filter(materias -> !materias.isEmpty())
-                .ifPresent(cursoToUpdate::setMaterias);
+            Optional.ofNullable(curso.getMaterias())
+                    .filter(materias -> !materias.isEmpty())
+                    .ifPresent(cursoToUpdate::setMaterias);
 
-        return cursoRepository.save(cursoToUpdate);
+            return cursoRepository.save(cursoToUpdate);
         }catch (BusinessException e){
             throw new BusinessException("Houve um erro, tente mais tarde.");
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
