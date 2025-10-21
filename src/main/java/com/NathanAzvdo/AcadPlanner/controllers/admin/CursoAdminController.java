@@ -40,7 +40,6 @@ public class CursoAdminController {
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CursoResponse.class)) }),
 
-            // ATUALIZADO (baseado no ControllerAdvice)
             @ApiResponse(responseCode = "400", description = "Dados inválidos (ex: Nome do curso é obrigatório) (BusinessException)",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)) }),
