@@ -51,6 +51,7 @@ public class MateriaMapper {
 
     public static MateriaBasicaResponse toMateriaBasicaResponse(MateriasConcluidas materia) {
         return new MateriaBasicaResponse(
+                materia.getMateria().getId(),
                 materia.getMateria().getNome(),
                 materia.getMateria().getDescricao(),
                 materia.getMateria().getCreditos()

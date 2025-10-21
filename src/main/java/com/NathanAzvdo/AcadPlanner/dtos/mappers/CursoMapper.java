@@ -19,7 +19,7 @@ public class CursoMapper {
                 curso.getDescricao(),
                 curso.getMaterias() != null ?
                         curso.getMaterias().stream()
-                                .map(m -> new MateriaBasicaResponse(m.getNome(), m.getDescricao(), m.getCreditos()))
+                                .map(m -> new MateriaBasicaResponse(m.getId(), m.getNome(), m.getDescricao(), m.getCreditos()))
                                 .collect(Collectors.toList())
                         : null
         );
