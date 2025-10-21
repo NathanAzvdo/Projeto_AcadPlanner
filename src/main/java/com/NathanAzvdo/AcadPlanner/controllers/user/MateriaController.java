@@ -65,7 +65,7 @@ public class MateriaController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<String> ingressarMateria(@PathVariable Long idMateria, @AuthenticationPrincipal User user){
-        materiaService.novaMateriaEmAndamento(idMateria, user);
+        materiaService.novaMateriaEmAndamento(idMateria, user.getId());
         return ResponseEntity.ok().body("Ingressou na matéria com sucesso!");
     }
 
@@ -81,14 +81,52 @@ public class MateriaController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<List<MateriaBasicaResponse>> findMateriasConcluidas(@AuthenticationPrincipal User user){
+
+
         List<MateriaBasicaResponse> materias = materiaService.materiasConcluidas(user.getId()).stream()
                 .map(MateriaMapper::toMateriaBasicaResponse)
                 .toList();
         return ResponseEntity.ok().body(materias);
     }
 
+    @GetMapping("/em-andamento")
+    @Operation(summary = "Lista matérias em andamento",
+            description = "Retorna a lista de matérias que o usuário logado está cursando no momento.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de matérias em andamento recuperada",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = MateriaResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autorizado (token inválido)",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Nenhuma matéria em andamento encontrada (EmptyListException)",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<List<MateriaResponse>> findMateriasEmAndamento(@AuthenticationPrincipal User user){
+        List<MateriaResponse> materias = materiaService.materiasEmAndamento(user.getId()).stream()
+                .map(MateriaMapper::toMateriaResponse)
+                .toList();
+        return ResponseEntity.ok().body(materias);
+    }
+
+    @GetMapping("/disponiveis")
+    @Operation(summary = "Lista matérias disponíveis (Sugestão)",
+            description = "Retorna a lista de matérias que o usuário pode cursar (já cumpriu pré-requisitos e não está cursando/concluída).")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de matérias disponíveis recuperada",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = MateriaResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autorizado (token inválido)",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Nenhuma matéria disponível para cursar (EmptyListException)",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<List<MateriaResponse>> findMateriasDisponiveis(@AuthenticationPrincipal User user){
+        List<MateriaResponse> materias = materiaService.findMateriasDisponiveis(user).stream()
+                .map(MateriaMapper::toMateriaResponse)
+                .toList();
+        return ResponseEntity.ok().body(materias);
+    }
+
     @GetMapping("/materias-curso")
-    @Operation(summary = "Lista matérias do curso",
+    @Operation(summary = "Lista todas as matérias do curso",
             description = "Retorna todas as matérias associadas ao curso do usuário logado.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de matérias do curso recuperada",

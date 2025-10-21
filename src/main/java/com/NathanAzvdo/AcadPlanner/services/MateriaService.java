@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class MateriaService {
@@ -21,6 +23,7 @@ public class MateriaService {
     private final MateriaConcluidaRepository materiaConcluidaRepository;
     private final UserRepository userRepository;
     private final MateriaEmAndamentoRepository materiaEmAndamentoRepository;
+
     public MateriaService(MateriaRepository materiaRepository, MateriaConcluidaRepository materiaConcluidaRepository
             , UserRepository userRepository, MateriaEmAndamentoRepository materiaEmAndamentoRepository) {
         this.materiaRepository= materiaRepository;
@@ -29,9 +32,7 @@ public class MateriaService {
         this.materiaEmAndamentoRepository = materiaEmAndamentoRepository;
     }
 
-    // Método alterado para receber User
-    public void novaMateriaEmAndamento(Long materiaId, User user) {
-        Long usuarioId = user.getId();
+    public void novaMateriaEmAndamento(Long materiaId, Long usuarioId) {
 
         Materia materia = materiaRepository.findById(materiaId).orElseThrow(() ->
                 new InvalidIdException("Matéria não encontrada com Id: " + materiaId));
@@ -50,7 +51,7 @@ public class MateriaService {
         }
 
         MateriasEmAndamento materiasEmAndamento = new MateriasEmAndamento();
-        materiasEmAndamento.setUsuarioId(user.getId());
+        materiasEmAndamento.setUsuarioId(usuarioId); // Usa o ID recebido
         materiasEmAndamento.setMateriaId(materia.getId());
         materiasEmAndamento.setDataInicio(LocalDate.now());
 
@@ -111,6 +112,67 @@ public class MateriaService {
             throw new BusinessException("Houve um erro, tente mais tarde.");
         }
     }
+
+    public List<Materia> materiasEmAndamento(Long usuarioId) {
+        try {
+            List<MateriasEmAndamento> materiasEmAndamento = materiaEmAndamentoRepository.findByUsuarioId(usuarioId);
+            if (materiasEmAndamento.isEmpty()) {
+                throw new EmptyListException("Nenhuma matéria em andamento encontrada.");
+            }
+
+            List<Long> materiaIds = materiasEmAndamento.stream()
+                    .map(MateriasEmAndamento::getMateriaId)
+                    .toList();
+
+            return materiaRepository.findAllById(materiaIds);
+
+        } catch (BusinessException e) {
+            throw new BusinessException("Houve um erro, tente mais tarde.");
+        }
+    }
+
+    public List<Materia> findMateriasDisponiveis(User user) {
+        try {
+            Long usuarioId = user.getId();
+            Long cursoId = user.getCurso().getId();
+
+            List<Materia> materiasDoCurso = materiaRepository.findByCursosId(cursoId);
+
+            Set<Long> concluidasIds = materiaConcluidaRepository.findByUsuarioId(usuarioId).stream()
+                    .map(mc -> mc.getMateriasConcluidasId().getMateriaId())
+                    .collect(Collectors.toSet());
+
+            Set<Long> emAndamentoIds = materiaEmAndamentoRepository.findByUsuarioId(usuarioId).stream()
+                    .map(MateriasEmAndamento::getMateriaId)
+                    .collect(Collectors.toSet());
+
+            List<Materia> disponiveis = materiasDoCurso.stream()
+                    .filter(materia -> !concluidasIds.contains(materia.getId()))
+                    .filter(materia -> !emAndamentoIds.contains(materia.getId()))
+                    .filter(materia -> {
+                        Set<Long> preRequisitosIds = materia.getPreRequisitos().stream()
+                                .map(Materia::getId)
+                                .collect(Collectors.toSet());
+
+                        if (preRequisitosIds.isEmpty()) {
+                            return true;
+                        }
+
+                        return concluidasIds.containsAll(preRequisitosIds);
+                    })
+                    .toList();
+
+            if (disponiveis.isEmpty()) {
+                throw new EmptyListException("Nenhuma matéria disponível para cursar no momento.");
+            }
+
+            return disponiveis;
+
+        } catch (BusinessException e) {
+            throw new BusinessException("Houve um erro ao buscar matérias disponíveis: " + e.getMessage());
+        }
+    }
+
 
     public Materia findById(Long id) {
         try{
