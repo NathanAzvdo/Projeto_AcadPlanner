@@ -37,6 +37,7 @@ public class MateriaMapper {
 
     public static MateriaResponse toMateriaResponse(Materia materia) {
         return MateriaResponse.builder()
+                .id(materia.getId())
                 .nome(materia.getNome())
                 .descricao(materia.getDescricao())
                 .creditos(materia.getCreditos())
