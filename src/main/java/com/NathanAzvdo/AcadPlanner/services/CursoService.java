@@ -28,6 +28,12 @@ public class CursoService {
         }
     }
 
+
+
+    public Optional<Object> findByNome(String nome) {
+        return cursoRepository.findByNome(nome);
+    }
+
     private void validateCurso(Curso curso) {
         if (curso == null) {
             throw new BusinessException("O curso não pode ser nulo");
