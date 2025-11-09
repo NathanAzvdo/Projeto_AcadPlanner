@@ -39,6 +39,7 @@ public class SecurityConfigurations {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/cursos").permitAll()
                         .requestMatchers(SWAGGER_WHITELIST).permitAll()
