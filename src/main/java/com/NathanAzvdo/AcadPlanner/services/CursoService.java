@@ -20,12 +20,9 @@ public class CursoService {
     }
 
     public Curso save(Curso curso) {
-        try {
             validateCurso(curso);
             return cursoRepository.save(curso);
-        } catch (BusinessException e) {
-            throw new BusinessException("Erro ao salvar o curso: " + e.getMessage());
-        }
+
     }
 
 
@@ -57,52 +54,37 @@ public class CursoService {
     }
 
     public List<Curso> listAll(){
-        try {
             List<Curso> cursos = cursoRepository.findAll();
             if (cursos.isEmpty()) {
                 throw new EmptyListException("Nenhum curso encontrado.");
             }
             return cursos;
-        }catch (BusinessException e){
-            throw new BusinessException("Houve um erro, tente mais tarde.");
-        }
+
     }
 
     public Curso findById(Long id){
-        try {
             return cursoRepository.findById(id)
                     .orElseThrow(() -> new InvalidIdException("Curso com ID " + id + " não encontrado"));
-        }catch (BusinessException e){
-            throw new BusinessException("Houve um erro, tente mais tarde.");
-        }
     }
 
     public Curso findUserCourse(Long cursoId){
-        try {
             if (cursoId == null) {
                 throw new InvalidIdException("Curso não encontrado para o usuário");
             }
             return cursoRepository.findById(cursoId)
                     .orElseThrow(() -> new InvalidIdException("Curso não encontrado"));
-        }catch (BusinessException e){
-            throw new BusinessException("Houve um erro, tente mais tarde.");
-        }
     }
 
     public void deleteById(Long id){
-        try {
             Optional<Curso> curso = cursoRepository.findById(id);
             if (curso.isEmpty()) {
                 throw new InvalidIdException("Id inválido!");
             }
             cursoRepository.deleteById(id);
-        }catch (BusinessException e){
-            throw new BusinessException("Houve um erro, tente mais tarde.");
-        }
+
     }
 
     public Curso update(Curso curso, Long id) {
-        try {
             Curso cursoToUpdate = cursoRepository.findById(id)
                     .orElseThrow(() -> new InvalidIdException("Curso com ID " + id + " não encontrado para atualização"));
 
@@ -118,8 +100,6 @@ public class CursoService {
                     .ifPresent(cursoToUpdate::setMaterias);
 
             return cursoRepository.save(cursoToUpdate);
-        }catch (BusinessException e){
-            throw new BusinessException("Houve um erro, tente mais tarde.");
-        }
+
     }
 }

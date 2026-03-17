@@ -18,7 +18,7 @@ public class UserService {
     }
 
     public User register(User user) {
-        try {
+
             if (user.getNome() == null || user.getEmail() == null ||
                     user.getSenha() == null || user.getCurso().getId() == null) {
                 throw new EmptyFieldException("Preencha todos os campos!");
@@ -33,9 +33,6 @@ public class UserService {
             user.setSenha(encryptedPassword);
 
             return repository.save(user);
-        }catch (BusinessException e){
-            throw new BusinessException("Houve um erro, tente mais tarde.");
-        }
     }
 
 }

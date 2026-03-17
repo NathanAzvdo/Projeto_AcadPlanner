@@ -90,49 +90,36 @@ public class MateriaService {
     }
 
     public List<Materia> findMateriasCurso(Long cursoId) {
-        try {
-            List<Materia> materias = materiaRepository.findByCursosId(cursoId);
-            if (materias.isEmpty()) {
-                throw new EmptyListException("Nenhuma matéria encontrada.");
-            }
-            return materias;
-        }catch (BusinessException e){
-            throw new BusinessException("Houve um erro, tente mais tarde.");
+        List<Materia> materias = materiaRepository.findByCursosId(cursoId);
+        if (materias.isEmpty()) {
+           throw new EmptyListException("Nenhuma matéria encontrada.");
         }
+        return materias;
+
     }
 
     public List<MateriasConcluidas> materiasConcluidas(Long usuarioId) {
-        try {
             List<MateriasConcluidas> materiasConcluidas = materiaConcluidaRepository.findByUsuarioId(usuarioId);
             if (materiasConcluidas.isEmpty()) {
                 throw new EmptyListException("Nenhuma matéria concluída encontrada.");
             }
             return materiasConcluidas;
-        } catch (BusinessException e) {
-            throw new BusinessException("Houve um erro, tente mais tarde.");
-        }
     }
 
     public List<Materia> materiasEmAndamento(Long usuarioId) {
-        try {
             List<MateriasEmAndamento> materiasEmAndamento = materiaEmAndamentoRepository.findByUsuarioId(usuarioId);
             if (materiasEmAndamento.isEmpty()) {
                 throw new EmptyListException("Nenhuma matéria em andamento encontrada.");
             }
-
             List<Long> materiaIds = materiasEmAndamento.stream()
                     .map(MateriasEmAndamento::getMateriaId)
                     .toList();
-
             return materiaRepository.findAllById(materiaIds);
 
-        } catch (BusinessException e) {
-            throw new BusinessException("Houve um erro, tente mais tarde.");
-        }
+
     }
 
     public List<Materia> findMateriasDisponiveis(User user) {
-        try {
             Long usuarioId = user.getId();
             Long cursoId = user.getCurso().getId();
 
@@ -168,23 +155,17 @@ public class MateriaService {
 
             return disponiveis;
 
-        } catch (BusinessException e) {
-            throw new BusinessException("Houve um erro ao buscar matérias disponíveis: " + e.getMessage());
-        }
+
     }
 
 
     public Materia findById(Long id) {
-        try{
             return materiaRepository.findById(id)
                     .orElseThrow(() -> new InvalidIdException("Matéria não encontrada para o ID: " + id));
-        }catch (BusinessException e){
-            throw new BusinessException("Houve um erro, tente mais tarde.");
-        }
+
     }
 
     public List<Materia> getPreRequisitos(Long materiaId) {
-        try {
             Materia materia = materiaRepository.findById(materiaId)
                     .orElseThrow(() -> new RuntimeException("Matéria não encontrada"));
 
@@ -192,20 +173,13 @@ public class MateriaService {
                 throw new EmptyListException("Nenhum pré-requisito encontrado para a matéria. ");
             }
             return materia.getPreRequisitos();
-        }catch (BusinessException e){
-            throw new BusinessException("Houve um erro, tente mais tarde.");
-        }
     }
 
     private boolean verificarMateriaAndamento(Long id, Long materiaId){
-        try {
             boolean materiaEmAndamento = materiaEmAndamentoRepository.existsByUsuarioIdAndMateriaId(id, materiaId);
             if (materiaEmAndamento) {
                 return true;
             }
             return false;
-        }catch (BusinessException e){
-            throw new BusinessException("Houve um erro, tente mais tarde.");
-        }
     }
 }

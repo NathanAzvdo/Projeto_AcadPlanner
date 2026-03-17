@@ -29,29 +29,19 @@ public class AuthService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        try{
             return repository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o email: " + email));
-        }catch (BusinessException e){
-            throw new BusinessException("Houve um erro, tente mais tarde.");
-        }
     }
 
     public String login(User user){
-        try{
-            if(user.getEmail() == null || user.getSenha() == null){
-                throw new EmptyFieldException("Email ou senha não informados");
-            }
-            try{
-                var usernamePassword = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getSenha());
-                var authentication = authenticationManager.authenticate(usernamePassword);
-                return new TokenService().generateToken((User) authentication.getPrincipal());
-            }catch(BadCredentialsException e){
-                throw new InvalidCredentialsException("Email/senha inválidos");
-            }
-        }catch (BusinessException e){
-            throw new BusinessException("Houve um erro, tente mais tarde.");
+        if(user.getEmail() == null || user.getSenha() == null) {
+            throw new EmptyFieldException("Email ou senha não informados");
         }
+        var usernamePassword = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getSenha());
+        var authentication = authenticationManager.authenticate(usernamePassword);
+        return new TokenService()
+                .generateToken((User) authentication.getPrincipal());
+
     }
 
 

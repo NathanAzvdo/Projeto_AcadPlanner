@@ -20,7 +20,6 @@ public class MateriaAdminService{
     }
 
     public Materia save(Materia newMateria) {
-        try {
             if (newMateria.getNome() == null || newMateria.getNome().trim().isEmpty()) {
                 throw new IllegalArgumentException("O nome da matéria não pode ser nulo ou vazio");
             }
@@ -35,9 +34,6 @@ public class MateriaAdminService{
                 throw new IllegalArgumentException("A matéria deve estar associada a pelo menos um curso");
             }
             return materiaRepository.save(newMateria);
-        }catch (BusinessException e){
-            throw new BusinessException("Houve um erro, tente mais tarde.");
-        }
     }
     public void deleteById(Long id) {
         try {
