@@ -14,7 +14,7 @@ public record ErrorResponse(
         @Schema(description = "Mensagem de erro detalhada", example = "Curso não encontrado para o ID: 99")
         String message,
 
-        @Schema(description = "Path da API que originou o erro", example = "/admin/curso/99")
+        @Schema(description = "Path da API que originou o erro", example = "/admin/course/99")
         String path,
 
         @Schema(description = "Timestamp de quando o erro ocorreu (UTC)")

@@ -12,12 +12,12 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Embeddable
-public class MateriasConcluidasId implements Serializable {
+public class InProgressSubjectId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Column(name = "usuario_id")
-    private Long usuarioId;
+    private Long userId;
 
     @Column(name = "materia_id")
-    private Long materiaId;
+    private Long subjectId;
 }

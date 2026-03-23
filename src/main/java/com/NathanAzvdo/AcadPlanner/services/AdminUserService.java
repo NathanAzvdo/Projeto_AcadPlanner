@@ -1,10 +1,10 @@
 package com.NathanAzvdo.AcadPlanner.services;
 
-import com.NathanAzvdo.AcadPlanner.entities.Curso;
+import com.NathanAzvdo.AcadPlanner.entities.Course;
 import com.NathanAzvdo.AcadPlanner.entities.User;
 import com.NathanAzvdo.AcadPlanner.exceptions.FieldAlreadyExistsException;
 import com.NathanAzvdo.AcadPlanner.exceptions.InvalidIdException;
-import com.NathanAzvdo.AcadPlanner.repositories.CursoRepository;
+import com.NathanAzvdo.AcadPlanner.repositories.CourseRepository;
 import com.NathanAzvdo.AcadPlanner.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,14 +14,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
-public class UserAdminService {
+public class AdminUserService {
 
     private final UserRepository userRepository;
-    private final CursoRepository cursoRepository;
+    private final CourseRepository courseRepository;
 
-    public UserAdminService(UserRepository userRepository, CursoRepository cursoRepository) {
+    public AdminUserService(UserRepository userRepository, CourseRepository courseRepository) {
         this.userRepository = userRepository;
-        this.cursoRepository = cursoRepository;
+        this.courseRepository = courseRepository;
     }
 
     @Transactional
@@ -30,7 +30,7 @@ public class UserAdminService {
         User userToUpdate = userRepository.findById(id)
                 .orElseThrow(() -> new InvalidIdException("Usuário não encontrado para o ID: " + id));
 
-        Optional.ofNullable(userUpdateData.getNome()).ifPresent(userToUpdate::setNome);
+        Optional.ofNullable(userUpdateData.getName()).ifPresent(userToUpdate::setName);
 
         if (userUpdateData.getEmail() != null && !Objects.equals(userToUpdate.getEmail(), userUpdateData.getEmail())) {
 
@@ -40,12 +40,12 @@ public class UserAdminService {
             userToUpdate.setEmail(userUpdateData.getEmail());
         }
 
-        if (userUpdateData.getCurso() != null && userUpdateData.getCurso().getId() != null) {
+        if (userUpdateData.getCourse() != null && userUpdateData.getCourse().getId() != null) {
 
-            Curso novoCurso = cursoRepository.findById(userUpdateData.getCurso().getId())
-                    .orElseThrow(() -> new InvalidIdException("Curso não encontrado para o ID: " + userUpdateData.getCurso().getId()));
+            Course newCourse = courseRepository.findById(userUpdateData.getCourse().getId())
+                    .orElseThrow(() -> new InvalidIdException("Curso não encontrado para o ID: " + userUpdateData.getCourse().getId()));
 
-            userToUpdate.setCurso(novoCurso);
+            userToUpdate.setCourse(newCourse);
         }
 
         Optional.ofNullable(userUpdateData.getRole()).ifPresent(userToUpdate::setRole);

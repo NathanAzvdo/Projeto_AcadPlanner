@@ -22,28 +22,28 @@ public class User implements UserDetails {
     private Long id;
 
     @Column(nullable = false, length = 100)
-    private String nome;
+    private String name;
 
     @Column(unique = true, nullable = false)
     private String email;
 
     @Column(nullable = false)
-    private String senha;
+    private String password;
 
     @ManyToOne
     @JoinColumn(name = "curso_id")
-    private Curso curso;
+    private Course course;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private UserRole role;
 
     @Builder
-    public User(String nome, String email, String senha, Curso curso) {
-        this.nome = nome;
+    public User(String name, String email, String password, Course course) {
+        this.name = name;
         this.email = email;
-        this.senha = senha;
-        this.curso = curso;
+        this.password = password;
+        this.course = course;
         this.role = UserRole.USER;
     }
 
@@ -63,7 +63,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.senha;
+        return this.password;
     }
 
     @Override

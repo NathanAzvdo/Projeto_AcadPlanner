@@ -1,11 +1,11 @@
 package com.NathanAzvdo.AcadPlanner.controllers.admin;
 
-import com.NathanAzvdo.AcadPlanner.dtos.mappers.MateriaMapper;
-import com.NathanAzvdo.AcadPlanner.dtos.requests.MateriaRequest;
+import com.NathanAzvdo.AcadPlanner.dtos.mappers.SubjectMapper;
+import com.NathanAzvdo.AcadPlanner.dtos.requests.SubjectRequest;
 import com.NathanAzvdo.AcadPlanner.dtos.responses.ErrorResponse;
 import com.NathanAzvdo.AcadPlanner.dtos.responses.MateriaResponse;
-import com.NathanAzvdo.AcadPlanner.entities.Materia;
-import com.NathanAzvdo.AcadPlanner.services.MateriaAdminService;
+import com.NathanAzvdo.AcadPlanner.entities.Subject;
+import com.NathanAzvdo.AcadPlanner.services.AdminSubjectService;
 
 // Imports do Swagger/Springdoc
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,11 +27,11 @@ import java.util.List;
 @RequestMapping("/admin/materia")
 @Tag(name = "Matérias (Admin)", description = "Endpoints para gerenciamento de matérias")
 @SecurityRequirement(name = "bearerAuth") // Exige autenticação em todos os endpoints
-public class MateriaAdminController {
+public class AdminSubjectController {
 
-    private final MateriaAdminService materiaService;
+    private final AdminSubjectService materiaService;
 
-    public MateriaAdminController(MateriaAdminService materiaService) {
+    public AdminSubjectController(AdminSubjectService materiaService) {
         this.materiaService = materiaService;
     }
 
@@ -43,14 +43,14 @@ public class MateriaAdminController {
                             schema = @Schema(implementation = MateriaResponse.class)) }),
 
             // Baseado no MateriaAdminService (que lança IllegalArgumentException)
-            @ApiResponse(responseCode = "400", description = "Dados inválidos (ex: nome vazio, créditos <= 0) (BusinessException / IllegalArgumentException)",
+            @ApiResponse(responseCode = "400", description = "Dados inválidos (ex: name vazio, créditos <= 0) (BusinessException / IllegalArgumentException)",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)) })
     })
-    public ResponseEntity<MateriaResponse> save(@RequestBody MateriaRequest materiaRequest) {
-        Materia newMateria = MateriaMapper.toMateria(materiaRequest);
-        Materia materia = materiaService.save(newMateria);
-        return ResponseEntity.ok().body(MateriaMapper.toMateriaResponse(materia));
+    public ResponseEntity<MateriaResponse> save(@RequestBody SubjectRequest subjectRequest) {
+        Subject newSubject = SubjectMapper.toSubject(subjectRequest);
+        Subject subject = materiaService.save(newSubject);
+        return ResponseEntity.ok().body(SubjectMapper.toMateriaResponse(subject));
     }
 
     @DeleteMapping("/{id}")
@@ -66,7 +66,7 @@ public class MateriaAdminController {
                             schema = @Schema(implementation = ErrorResponse.class)) })
     })
     public ResponseEntity<String> delete(
-            @Parameter(description = "ID da matéria a ser excluída", example = "1")
+            @Parameter(description = "ID da matéria name ser excluída", example = "1")
             @PathVariable Long id) {
         materiaService.deleteById(id);
         return ResponseEntity.ok().body("Matéria deletada com sucesso!");
@@ -85,13 +85,13 @@ public class MateriaAdminController {
                             schema = @Schema(implementation = ErrorResponse.class)) })
     })
     public ResponseEntity<MateriaResponse> update(
-            @RequestBody MateriaRequest materiaRequest,
-            @Parameter(description = "ID da matéria a ser atualizada", example = "1")
+            @RequestBody SubjectRequest subjectRequest,
+            @Parameter(description = "ID da matéria name ser atualizada", example = "1")
             @PathVariable Long id) {
 
-        Materia newMateria = MateriaMapper.toMateria(materiaRequest);
-        Materia updatedMateria = materiaService.updateMateria(newMateria, id);
-        return ResponseEntity.ok().body(MateriaMapper.toMateriaResponse(updatedMateria));
+        Subject newSubject = SubjectMapper.toSubject(subjectRequest);
+        Subject updatedSubject = materiaService.updateSubject(newSubject, id);
+        return ResponseEntity.ok().body(SubjectMapper.toMateriaResponse(updatedSubject));
     }
 
     @PostMapping("/{materiaId}/pre-requisito/{preRequisitoId}")
@@ -101,7 +101,7 @@ public class MateriaAdminController {
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = MateriaResponse.class)) }),
 
-            // O service lança RuntimeException, mas a intenção é 404
+            // O service lança RuntimeException, mas name intenção é 404
             @ApiResponse(responseCode = "404", description = "Matéria ou Pré-requisito não encontrados",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)) })
@@ -113,12 +113,12 @@ public class MateriaAdminController {
             @Parameter(description = "ID do pré-requisito (ex: Cálculo 1)", example = "1")
             @PathVariable Long preRequisitoId) {
 
-        Materia updatedMateria = materiaService.addPreRequisito(materiaId, preRequisitoId);
-        return ResponseEntity.ok().body(MateriaMapper.toMateriaResponse(updatedMateria));
+        Subject updatedSubject = materiaService.addPreRequisite(materiaId, preRequisitoId);
+        return ResponseEntity.ok().body(SubjectMapper.toMateriaResponse(updatedSubject));
     }
 
     @DeleteMapping("/{materiaId}/pre-requisito/{preRequisitoId}")
-    @Operation(summary = "Remove um pré-requisito", description = "Remove a dependência de pré-requisito de uma matéria.")
+    @Operation(summary = "Remove um pré-requisito", description = "Remove name dependência de pré-requisito de uma matéria.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pré-requisito removido com sucesso",
                     content = { @Content(mediaType = "application/json",
@@ -135,8 +135,8 @@ public class MateriaAdminController {
             @Parameter(description = "ID do pré-requisito (ex: Cálculo 1)", example = "1")
             @PathVariable Long preRequisitoId) {
 
-        Materia updatedMateria = materiaService.removePreRequisito(materiaId, preRequisitoId);
-        return ResponseEntity.ok().body(MateriaMapper.toMateriaResponse(updatedMateria));
+        Subject updatedSubject = materiaService.removePreRequisito(materiaId, preRequisitoId);
+        return ResponseEntity.ok().body(SubjectMapper.toMateriaResponse(updatedSubject));
     }
 
     @GetMapping
@@ -145,16 +145,14 @@ public class MateriaAdminController {
             @ApiResponse(responseCode = "200", description = "Lista de matérias recuperada",
                     content = { @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = MateriaResponse.class))) }),
-
-            // Baseado no ControllerAdvice (EmptyListException -> 404)
             @ApiResponse(responseCode = "404", description = "Nenhuma matéria encontrada (EmptyListException)",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)) })
     })
     public ResponseEntity<List<MateriaResponse>> findAll() {
-        List<Materia> materias = materiaService.findAll();
-        List<MateriaResponse> response = materias.stream()
-                .map(MateriaMapper::toMateriaResponse)
+        List<Subject> subjects = materiaService.findAll();
+        List<MateriaResponse> response = subjects.stream()
+                .map(SubjectMapper::toMateriaResponse)
                 .toList();
         return ResponseEntity.ok().body(response);
     }

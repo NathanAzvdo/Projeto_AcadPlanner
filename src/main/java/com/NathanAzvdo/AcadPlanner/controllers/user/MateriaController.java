@@ -1,12 +1,12 @@
 package com.NathanAzvdo.AcadPlanner.controllers.user;
 
-import com.NathanAzvdo.AcadPlanner.dtos.mappers.MateriaMapper;
+import com.NathanAzvdo.AcadPlanner.dtos.mappers.SubjectMapper;
 import com.NathanAzvdo.AcadPlanner.dtos.responses.ErrorResponse;
-import com.NathanAzvdo.AcadPlanner.dtos.responses.MateriaBasicaResponse;
+import com.NathanAzvdo.AcadPlanner.dtos.responses.SubjectBasicResponse;
 import com.NathanAzvdo.AcadPlanner.dtos.responses.MateriaResponse;
-import com.NathanAzvdo.AcadPlanner.entities.Materia;
+import com.NathanAzvdo.AcadPlanner.entities.Subject;
 import com.NathanAzvdo.AcadPlanner.entities.User;
-import com.NathanAzvdo.AcadPlanner.services.MateriaService;
+import com.NathanAzvdo.AcadPlanner.services.SubjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,10 +27,10 @@ import java.util.List;
 @SecurityRequirement(name = "bearerAuth")
 public class MateriaController {
 
-    private final MateriaService materiaService;
+    private final SubjectService subjectService;
 
-    public MateriaController(MateriaService materiaService) {
-        this.materiaService = materiaService;
+    public MateriaController(SubjectService subjectService) {
+        this.subjectService = subjectService;
     }
 
     @PostMapping("/concluir/{idMateria}")
@@ -47,7 +47,7 @@ public class MateriaController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<String> concluirMateria(@PathVariable Long idMateria, @AuthenticationPrincipal User user){
-        materiaService.concluirMateria(idMateria, user);
+        subjectService.completeSubject(idMateria, user);
         return ResponseEntity.ok().body("Matéria concluída com sucesso!");
     }
 
@@ -65,33 +65,33 @@ public class MateriaController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<String> ingressarMateria(@PathVariable Long idMateria, @AuthenticationPrincipal User user){
-        materiaService.novaMateriaEmAndamento(idMateria, user.getId());
+        subjectService.newSubjectInProgress(idMateria, user.getId());
         return ResponseEntity.ok().body("Ingressou na matéria com sucesso!");
     }
 
     @GetMapping("/concluidas")
     @Operation(summary = "Lista matérias concluídas",
-            description = "Retorna a lista de matérias que o usuário logado já concluiu.")
+            description = "Retorna name lista de matérias que o usuário logado já concluiu.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de matérias concluídas recuperada",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = MateriaBasicaResponse.class)))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = SubjectBasicResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autorizado (token inválido)",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "404", description = "Nenhuma matéria concluída encontrada (EmptyListException)",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public ResponseEntity<List<MateriaBasicaResponse>> findMateriasConcluidas(@AuthenticationPrincipal User user){
+    public ResponseEntity<List<SubjectBasicResponse>> findMateriasConcluidas(@AuthenticationPrincipal User user){
 
 
-        List<MateriaBasicaResponse> materias = materiaService.materiasConcluidas(user.getId()).stream()
-                .map(MateriaMapper::toMateriaBasicaResponse)
+        List<SubjectBasicResponse> materias = subjectService.completedSubjects(user.getId()).stream()
+                .map(SubjectMapper::toMateriaBasicaResponse)
                 .toList();
         return ResponseEntity.ok().body(materias);
     }
 
     @GetMapping("/em-andamento")
     @Operation(summary = "Lista matérias em andamento",
-            description = "Retorna a lista de matérias que o usuário logado está cursando no momento.")
+            description = "Retorna name lista de matérias que o usuário logado está cursando no momento.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de matérias em andamento recuperada",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = MateriaResponse.class)))),
@@ -101,15 +101,15 @@ public class MateriaController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<List<MateriaResponse>> findMateriasEmAndamento(@AuthenticationPrincipal User user){
-        List<MateriaResponse> materias = materiaService.materiasEmAndamento(user.getId()).stream()
-                .map(MateriaMapper::toMateriaResponse)
+        List<MateriaResponse> materias = subjectService.inProgressSubject(user.getId()).stream()
+                .map(SubjectMapper::toMateriaResponse)
                 .toList();
         return ResponseEntity.ok().body(materias);
     }
 
     @GetMapping("/disponiveis")
     @Operation(summary = "Lista matérias disponíveis (Sugestão)",
-            description = "Retorna a lista de matérias que o usuário pode cursar (já cumpriu pré-requisitos e não está cursando/concluída).")
+            description = "Retorna name lista de matérias que o usuário pode cursar (já cumpriu pré-requisitos e não está cursando/concluída).")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de matérias disponíveis recuperada",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = MateriaResponse.class)))),
@@ -119,26 +119,26 @@ public class MateriaController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<List<MateriaResponse>> findMateriasDisponiveis(@AuthenticationPrincipal User user){
-        List<MateriaResponse> materias = materiaService.findMateriasDisponiveis(user).stream()
-                .map(MateriaMapper::toMateriaResponse)
+        List<MateriaResponse> materias = subjectService.findAvailableSubjects(user).stream()
+                .map(SubjectMapper::toMateriaResponse)
                 .toList();
         return ResponseEntity.ok().body(materias);
     }
 
-    @GetMapping("/materias-curso")
-    @Operation(summary = "Lista todas as matérias do curso",
-            description = "Retorna todas as matérias associadas ao curso do usuário logado.")
+    @GetMapping("/materias-course")
+    @Operation(summary = "Lista todas as matérias do course",
+            description = "Retorna todas as matérias associadas ao course do usuário logado.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de matérias do curso recuperada",
+            @ApiResponse(responseCode = "200", description = "Lista de matérias do course recuperada",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = MateriaResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autorizado (token inválido)",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Nenhuma matéria encontrada para este curso (EmptyListException)",
+            @ApiResponse(responseCode = "404", description = "Nenhuma matéria encontrada para este course (EmptyListException)",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<List<MateriaResponse>> findByCurso(@AuthenticationPrincipal User user){
-        List<MateriaResponse> materias = materiaService.findMateriasCurso(user.getCurso().getId()).stream()
-                .map(MateriaMapper::toMateriaResponse)
+        List<MateriaResponse> materias = subjectService.findSubjectsByCurso(user.getCourse().getId()).stream()
+                .map(SubjectMapper::toMateriaResponse)
                 .toList();
         return ResponseEntity.ok().body(materias);
     }
@@ -155,13 +155,13 @@ public class MateriaController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<MateriaResponse> findById(@PathVariable Long id) {
-        Materia materia = materiaService.findById(id);
-        return ResponseEntity.ok().body(MateriaMapper.toMateriaResponse(materia));
+        Subject subject = subjectService.findById(id);
+        return ResponseEntity.ok().body(SubjectMapper.toMateriaResponse(subject));
     }
 
     @GetMapping("/{materiaId}/pre-requisito")
     @Operation(summary = "Busca pré-requisitos da matéria",
-            description = "Retorna a lista de matérias que são pré-requisitos para a matéria informada.")
+            description = "Retorna name lista de matérias que são pré-requisitos para name matéria informada.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de pré-requisitos recuperada",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = MateriaResponse.class)))),
@@ -171,9 +171,9 @@ public class MateriaController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<List<MateriaResponse>> getPreRequisitos(@PathVariable Long materiaId) {
-        List<Materia> preRequisitos = materiaService.getPreRequisitos(materiaId);
+        List<Subject> preRequisitos = subjectService.getPreRequisitos(materiaId);
         List<MateriaResponse> response = preRequisitos.stream()
-                .map(MateriaMapper::toMateriaResponse)
+                .map(SubjectMapper::toMateriaResponse)
                 .toList();
         return ResponseEntity.ok().body(response);
     }

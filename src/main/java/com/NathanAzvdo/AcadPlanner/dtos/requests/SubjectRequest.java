@@ -4,20 +4,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
 @Schema(description = "DTO para criar ou atualizar uma Matéria (Admin)")
-public record MateriaRequest(
+public record SubjectRequest(
         @Schema(description = "Nome da matéria", example = "Cálculo 1")
-        String nome,
+        String name,
 
         @Schema(description = "Descrição/Ementa da matéria", example = "Estudo de limites, derivadas...")
-        String descricao,
+        String description,
 
         @Schema(description = "Número de créditos da matéria", example = "4")
-        int creditos,
+        int credits,
 
-        @Schema(description = "(Opcional) Lista de cursos para associar à matéria")
-        List<CursoRequest> curso,
+        @Schema(description = "(Opcional) Lista de courses para associar à matéria")
+        List<CourseRequest> courses,
 
         @Schema(description = "(Opcional) Lista de matérias que são pré-requisitos")
-        List<MateriaRequest> preRequisito
+        List<SubjectRequest> prerequisites
 ) {
 }

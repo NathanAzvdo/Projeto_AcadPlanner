@@ -23,12 +23,12 @@ public class TokenService{
                     .withIssuer("AcadPlanner")
                     .withSubject(String.valueOf(user.getId()))
                     .withClaim("email", user.getEmail())
-                    .withClaim("curso", user.getCurso().getId())
+                    .withClaim("course", user.getCourse().getId())
                     .withExpiresAt(getExpirationTime())
                     .sign(algorithm);
             return token;
         }catch(JWTCreationException e){
-            throw new RuntimeException("Erro durante a geração do token: "+ e);
+            throw new RuntimeException("Erro durante name geração do token: "+ e);
         }
     }
 

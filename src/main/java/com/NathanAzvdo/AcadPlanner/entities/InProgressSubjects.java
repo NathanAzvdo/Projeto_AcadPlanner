@@ -10,17 +10,17 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @Entity
-@IdClass(MateriasEmAndamentoId.class)
-public class MateriasEmAndamento {
+@IdClass(InProgressSubjectId.class)
+public class InProgressSubjects {
 
     @Id
-    private Long usuarioId;
+    private Long userId;
 
     @Id
-    private Long materiaId;
+    private Long subjectId;
 
     @Column(nullable = false)
-    private LocalDate dataInicio;
+    private LocalDate startDate;
 
-    private LocalDate previsaoConclusao;
+    private LocalDate estimatedCompletionDate;
 }

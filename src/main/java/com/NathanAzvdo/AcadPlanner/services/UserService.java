@@ -1,7 +1,6 @@
 package com.NathanAzvdo.AcadPlanner.services;
 
 import com.NathanAzvdo.AcadPlanner.entities.User;
-import com.NathanAzvdo.AcadPlanner.exceptions.BusinessException;
 import com.NathanAzvdo.AcadPlanner.exceptions.EmptyFieldException;
 import com.NathanAzvdo.AcadPlanner.exceptions.FieldAlreadyExistsException;
 import com.NathanAzvdo.AcadPlanner.repositories.UserRepository;
@@ -19,8 +18,8 @@ public class UserService {
 
     public User register(User user) {
 
-            if (user.getNome() == null || user.getEmail() == null ||
-                    user.getSenha() == null || user.getCurso().getId() == null) {
+            if (user.getName() == null || user.getEmail() == null ||
+                    user.getPassword() == null || user.getCourse().getId() == null) {
                 throw new EmptyFieldException("Preencha todos os campos!");
             }
 
@@ -29,8 +28,8 @@ public class UserService {
                 throw new FieldAlreadyExistsException("Email já cadastrado!");
             }
 
-            String encryptedPassword = new BCryptPasswordEncoder().encode(user.getSenha());
-            user.setSenha(encryptedPassword);
+            String encryptedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
+            user.setPassword(encryptedPassword);
 
             return repository.save(user);
     }

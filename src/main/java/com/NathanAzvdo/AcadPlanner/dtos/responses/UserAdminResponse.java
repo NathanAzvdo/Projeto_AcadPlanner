@@ -11,7 +11,7 @@ public record UserAdminResponse(
         Long id,
 
         @Schema(description = "Nome do usuário", example = "Jane Doe")
-        String nome,
+        String name,
 
         @Schema(description = "Email do usuário (login)", example = "jane.doe@email.com")
         String email,
@@ -20,6 +20,6 @@ public record UserAdminResponse(
         UserRole role,
 
         @Schema(description = "Curso ao qual o usuário está matriculado")
-        CursoBasicoResponse curso
+        CourseBasicResponse course
 ) {
 }

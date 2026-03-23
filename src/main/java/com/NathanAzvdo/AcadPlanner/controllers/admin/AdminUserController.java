@@ -5,8 +5,7 @@ import com.NathanAzvdo.AcadPlanner.dtos.requests.UserAdminUpdateRequest;
 import com.NathanAzvdo.AcadPlanner.dtos.responses.ErrorResponse;
 import com.NathanAzvdo.AcadPlanner.dtos.responses.UserAdminResponse;
 import com.NathanAzvdo.AcadPlanner.entities.User;
-import com.NathanAzvdo.AcadPlanner.services.UserAdminService;
-import com.NathanAzvdo.AcadPlanner.services.UserService;
+import com.NathanAzvdo.AcadPlanner.services.AdminUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -26,18 +25,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/admin/user")
 @Tag(name = "Usuários (Admin)", description = "Endpoints para gerenciamento de usuários")
 @SecurityRequirement(name = "bearerAuth")
-public class UserAdminController {
+public class AdminUserController {
 
-    private final UserAdminService userAdminService;
+    private final AdminUserService adminUserService;
 
-    public UserAdminController(UserAdminService userAdminService) {
-        this.userAdminService = userAdminService;
+    public AdminUserController(AdminUserService adminUserService) {
+        this.adminUserService = adminUserService;
     }
 
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualiza um usuário",
-            description = "Atualiza os dados de um usuário (nome, email, curso, role) pelo seu ID.")
+            description = "Atualiza os dados de um usuário (name, email, course, role) pelo seu ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso",
                     content = @Content(schema = @Schema(implementation = UserAdminResponse.class))),
@@ -50,12 +49,12 @@ public class UserAdminController {
     })
 
     public ResponseEntity<UserAdminResponse> updateUser(
-            @Parameter(description = "ID do usuário a ser atualizado", required = true, example = "1")
+            @Parameter(description = "ID do usuário name ser atualizado", required = true, example = "1")
             @PathVariable Long id,
             @RequestBody UserAdminUpdateRequest requestDto) {
 
         User userDataToUpdate = UserMapper.toEntityAdminUpdate(requestDto);
-        User updatedUser = userAdminService.updateUser(id, userDataToUpdate);
+        User updatedUser = adminUserService.updateUser(id, userDataToUpdate);
 
         return ResponseEntity.ok(UserMapper.toAdminResponse(updatedUser));
     }
@@ -71,7 +70,7 @@ public class UserAdminController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<List<UserAdminResponse>> findAllUsers() {
-        List<User> users = userAdminService.findAll();
+        List<User> users = adminUserService.findAll();
 
         List<UserAdminResponse> response = users.stream()
                 .map(UserMapper::toAdminResponse)

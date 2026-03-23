@@ -10,12 +10,12 @@ public record UserResponse(
         Long id,
 
         @Schema(description = "Nome do usuário", example = "Nathan Azevedo")
-        String nome,
+        String name,
 
         @Schema(description = "Email do usuário", example = "aluno@email.com")
         String email,
 
         @Schema(description = "Curso ao qual o usuário está matriculado")
-        CursoBasicoResponse curso
+        CourseBasicResponse course
 ) {
 }

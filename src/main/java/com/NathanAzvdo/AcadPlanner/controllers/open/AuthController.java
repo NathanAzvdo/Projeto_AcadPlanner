@@ -3,7 +3,7 @@ package com.NathanAzvdo.AcadPlanner.controllers.open;
 import com.NathanAzvdo.AcadPlanner.dtos.mappers.UserMapper;
 import com.NathanAzvdo.AcadPlanner.dtos.requests.UserRequest;
 import com.NathanAzvdo.AcadPlanner.dtos.responses.ErrorResponse;
-import com.NathanAzvdo.AcadPlanner.dtos.responses.LoginResponse;
+import com.NathanAzvdo.AcadPlanner.dtos.responses.SignInResponse;
 import com.NathanAzvdo.AcadPlanner.dtos.responses.UserResponse;
 import com.NathanAzvdo.AcadPlanner.entities.User;
 import com.NathanAzvdo.AcadPlanner.services.AuthService;
@@ -40,11 +40,11 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "Efetua o login do usuário",
-            description = "Autentica um usuário com base no nome de usuário e senha e retorna um token JWT.")
+            description = "Autentica um usuário com base no name de usuário e senha e retorna um token JWT.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Login bem-sucedido",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = LoginResponse.class)) }),
+                            schema = @Schema(implementation = SignInResponse.class)) }),
 
             // ATUALIZADO (baseado no ControllerAdvice)
             @ApiResponse(responseCode = "400", description = "Email ou senha não informados (EmptyFieldException)",
@@ -54,10 +54,10 @@ public class AuthController {
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)) })
     })
-    public ResponseEntity<LoginResponse> login(@RequestBody @Valid UserRequest userRequest){
+    public ResponseEntity<SignInResponse> login(@RequestBody @Valid UserRequest userRequest){
         User data = UserMapper.toEntityBasic(userRequest);
         String token = authService.login(data);
-        return ResponseEntity.ok(new LoginResponse(token));
+        return ResponseEntity.ok(new SignInResponse(token));
     }
 
     @PostMapping("/register")

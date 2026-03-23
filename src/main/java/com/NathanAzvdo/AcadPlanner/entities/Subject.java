@@ -14,19 +14,19 @@ import java.util.List;
 @Entity
 @Builder
 @AllArgsConstructor
-public class Materia {
+public class Subject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, length = 100)
-    private String nome;
+    private String name;
 
-    private String descricao;
+    private String description;
 
     @Column(nullable = false)
-    private int creditos;
+    private int credits;
 
     @ManyToMany
     @JoinTable(
@@ -35,7 +35,7 @@ public class Materia {
             inverseJoinColumns = @JoinColumn(name = "curso_id")
     )
     @JsonIgnore
-    private List<Curso> cursos;
+    private List<Course> courses;
 
     @ManyToMany
     @JoinTable(
@@ -44,5 +44,5 @@ public class Materia {
             inverseJoinColumns = @JoinColumn(name = "pre_requisito_id")
     )
     @JsonIgnore
-    private List<Materia> preRequisitos;
+    private List<Subject> prerequisites;
 }

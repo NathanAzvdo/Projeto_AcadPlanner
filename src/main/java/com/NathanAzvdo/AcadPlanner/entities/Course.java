@@ -14,20 +14,20 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Builder
-public class Curso {
+public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, length = 100)
-    private String nome;
+    private String name;
 
-    private String descricao;
+    private String description;
 
-    @OneToMany(mappedBy = "curso", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<User> usuarios;
+    private List<User> users;
 
 
     @ManyToMany
@@ -37,5 +37,5 @@ public class Curso {
             inverseJoinColumns = @JoinColumn(name = "materia_id")
     )
     @JsonIgnore
-    private List<Materia> materias;
+    private List<Subject> subjects;
 }

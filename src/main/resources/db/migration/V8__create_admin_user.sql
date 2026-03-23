@@ -1,4 +1,5 @@
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE
+EXTENSION IF NOT EXISTS pgcrypto;
 
 INSERT INTO usuario (nome, email, senha, role)
 VALUES ('Admin', 'admin@admin.com',

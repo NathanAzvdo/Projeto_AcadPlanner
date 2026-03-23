@@ -9,21 +9,21 @@ import java.time.LocalDate;
 @Entity
 @Data
 @NoArgsConstructor
-public class MateriasConcluidas {
+public class CompletedSubject {
 
     @EmbeddedId
-    private MateriasConcluidasId materiasConcluidasId;
+    private CompletedSubjectsId completedSubjectsId;
 
     @ManyToOne
-    @MapsId("usuarioId")
+    @MapsId("userId")
     @JoinColumn(name = "usuario_id")
-    private User usuario;
+    private User user;
 
     @ManyToOne
-    @MapsId("materiaId")
+    @MapsId("subjectId")
     @JoinColumn(name = "materia_id")
-    private Materia materia;
+    private Subject subject;
 
     @Column(nullable = false)
-    private LocalDate dataConclusao;
+    private LocalDate completionDate;
 }
