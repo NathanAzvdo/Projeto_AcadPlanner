@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
+@Table(name = "materia")
 @Builder
 @AllArgsConstructor
 public class Subject {
@@ -20,12 +21,13 @@ public class Subject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "nome", nullable = false, length = 100)
     private String name;
 
+    @Column(name = "descricao")
     private String description;
 
-    @Column(nullable = false)
+    @Column(name = "creditos", nullable = false)
     private int credits;
 
     @ManyToMany

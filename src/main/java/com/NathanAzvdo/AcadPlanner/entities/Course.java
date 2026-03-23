@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "curso")
 @Builder
 public class Course {
 
@@ -20,9 +21,10 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "nome", nullable = false, length = 100)
     private String name;
 
+    @Column(name = "descricao")
     private String description;
 
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)

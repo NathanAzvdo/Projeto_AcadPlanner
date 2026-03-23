@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "materias_concluidas")
 @Data
 @NoArgsConstructor
 public class CompletedSubject {
@@ -24,6 +25,6 @@ public class CompletedSubject {
     @JoinColumn(name = "materia_id")
     private Subject subject;
 
-    @Column(nullable = false)
+    @Column(name = "data_conclusao", nullable = false)
     private LocalDate completionDate;
 }
