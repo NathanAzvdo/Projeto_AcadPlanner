@@ -38,15 +38,13 @@ public class AuthController {
     }
 
 
-    @PostMapping("/login")
+    @PostMapping("/signin")
     @Operation(summary = "Efetua o login do usuário",
             description = "Autentica um usuário com base no name de usuário e senha e retorna um token JWT.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Login bem-sucedido",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = SignInResponse.class)) }),
-
-            // ATUALIZADO (baseado no ControllerAdvice)
             @ApiResponse(responseCode = "400", description = "Email ou senha não informados (EmptyFieldException)",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)) }),
@@ -68,7 +66,6 @@ public class AuthController {
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = UserResponse.class)) }),
 
-            // ATUALIZADO (baseado no ControllerAdvice)
             @ApiResponse(responseCode = "400", description = "Requisição inválida - Preencha todos os campos (EmptyFieldException)",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)) }),

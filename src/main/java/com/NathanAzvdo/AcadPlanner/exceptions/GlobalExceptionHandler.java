@@ -12,7 +12,6 @@ import java.time.Instant;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Método helper para criar name resposta
     private ResponseEntity<ErrorResponse> buildErrorResponse(
             HttpStatus status, String message, HttpServletRequest request) {
 

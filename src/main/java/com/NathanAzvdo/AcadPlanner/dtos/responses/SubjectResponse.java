@@ -6,7 +6,7 @@ import java.util.List;
 
 @Schema(description = "DTO com informações completas da Matéria, seus courses e pré-requisitos")
 @Builder
-public record MateriaResponse(
+public record SubjectResponse(
 
         @Schema(description = "id", example = "4")
         Long id,

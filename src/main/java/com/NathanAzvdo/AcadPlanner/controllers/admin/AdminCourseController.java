@@ -97,7 +97,6 @@ public class AdminCourseController {
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CourseResponse.class)) }),
 
-            // ATUALIZADO (baseado no ControllerAdvice)
             @ApiResponse(responseCode = "404", description = "Curso não encontrado para atualização (InvalidIdException)",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)) })

@@ -3,7 +3,7 @@ package com.NathanAzvdo.AcadPlanner.dtos.mappers;
 import com.NathanAzvdo.AcadPlanner.dtos.requests.SubjectRequest;
 import com.NathanAzvdo.AcadPlanner.dtos.responses.CourseBasicResponse;
 import com.NathanAzvdo.AcadPlanner.dtos.responses.SubjectBasicResponse;
-import com.NathanAzvdo.AcadPlanner.dtos.responses.MateriaResponse;
+import com.NathanAzvdo.AcadPlanner.dtos.responses.SubjectResponse;
 import com.NathanAzvdo.AcadPlanner.entities.Course;
 import com.NathanAzvdo.AcadPlanner.entities.Subject;
 import com.NathanAzvdo.AcadPlanner.entities.CompletedSubject;
@@ -35,8 +35,8 @@ public class SubjectMapper {
                 .build();
     }
 
-    public static MateriaResponse toMateriaResponse(Subject subject) {
-        return MateriaResponse.builder()
+    public static SubjectResponse toMateriaResponse(Subject subject) {
+        return SubjectResponse.builder()
                 .id(subject.getId())
                 .name(subject.getName())
                 .description(subject.getDescription())
@@ -50,7 +50,7 @@ public class SubjectMapper {
                 .build();
     }
 
-    public static SubjectBasicResponse toMateriaBasicaResponse(CompletedSubject materia) {
+    public static SubjectBasicResponse toBasicSubjectResponse(CompletedSubject materia) {
         return new SubjectBasicResponse(
                 materia.getSubject().getId(),
                 materia.getSubject().getName(),

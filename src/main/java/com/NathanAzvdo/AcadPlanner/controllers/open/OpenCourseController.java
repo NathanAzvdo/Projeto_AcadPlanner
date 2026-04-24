@@ -38,18 +38,16 @@ public class OpenCourseController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de courses recuperada com sucesso",
                     content = { @Content(mediaType = "application/json",
-                            // Indica que name resposta é um array (lista)
                             array = @ArraySchema(schema = @Schema(implementation = CourseBasicResponse.class))) }),
 
-            // Baseado no seu ControllerAdvice (EmptyListException -> 404)
             @ApiResponse(responseCode = "404", description = "Nenhum course encontrado (EmptyListException)",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)) })
     })
-    public ResponseEntity<List<CourseBasicResponse>> getCursos(){
-        List<CourseBasicResponse> cursos = courseService.listAll().stream()
+    public ResponseEntity<List<CourseBasicResponse>> getCourses(){
+        List<CourseBasicResponse> courses = courseService.listAll().stream()
                 .map(CourseMapper::toBasicoResponse).toList();
-        return ResponseEntity.ok(cursos);
+        return ResponseEntity.ok(courses);
 
     }
 }

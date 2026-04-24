@@ -23,15 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/course")
 @Tag(name = "Cursos (Usuário)", description = "Endpoints de consulta de courses para usuários logados")
 @SecurityRequirement(name = "bearerAuth")
-public class CursoController {
+public class CourseController {
 
     private final CourseService courseService;
 
-    public CursoController(CourseService courseService) {
+    public CourseController(CourseService courseService) {
         this.courseService = courseService;
     }
 
-    @GetMapping("/meu-course")
+    @GetMapping("/my-course")
     @Operation(summary = "Busca o course do usuário logado",
             description = "Retorna os detalhes do course ao qual o usuário autenticado está matriculado, com base no token JWT.")
     @ApiResponses(value = {

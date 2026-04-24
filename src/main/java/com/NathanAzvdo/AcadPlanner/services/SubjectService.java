@@ -30,7 +30,7 @@ public class SubjectService {
         this.inProgressSubjectRepository = inProgressSubjectRepository;
     }
 
-    public void newSubjectInProgress(Long subjectId, Long userId) {
+    public void enrollInSubject(Long subjectId, Long userId) {
 
         Subject subject = subjectRepository.findById(subjectId).orElseThrow(() ->
                 new InvalidIdException("Matéria não encontrada com Id: " + subjectId));
@@ -57,7 +57,7 @@ public class SubjectService {
     }
 
     @Transactional
-    public void completeSubject(Long subjectId, User user) {
+    public void finishSubject(Long subjectId, User user) {
         if (subjectId == null) {
             throw new InvalidIdException("ID da matéria não pode ser nulo");
         }
@@ -87,7 +87,7 @@ public class SubjectService {
         completedSubjectsRepository.save(completedSubject);
     }
 
-    public List<Subject> findSubjectsByCurso(Long cursoId) {
+    public List<Subject> findSubjectsByCourse(Long cursoId) {
         List<Subject> subjects = subjectRepository.findByCoursesId(cursoId);
         if (subjects.isEmpty()) {
            throw new EmptyListException("Nenhuma matéria encontrada.");
@@ -163,7 +163,7 @@ public class SubjectService {
 
     }
 
-    public List<Subject> getPreRequisitos(Long subjectId) {
+    public List<Subject> getPreRequisites(Long subjectId) {
             Subject subject = subjectRepository.findById(subjectId)
                     .orElseThrow(() -> new RuntimeException("Matéria não encontrada"));
 
